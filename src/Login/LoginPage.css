@@ -1,0 +1,24 @@
+/* LoginPage CSS */
+
+.section {
+  /* background-color: rgb(220, 222, 226); */
+  height: 100vh;
+}
+
+/* LoginForm CSS */
+
+.login-section {
+  width: 550px; /* Set width of login form container */
+  border: 1px solid #ccc; /* Add border */
+  border-radius: 30px;  /* Adjust as needed for rounded corners */
+  background-color: #f0c28e; /* Adjust as needed for background color */
+}
+
+/* ForgotPassword CSS */
+
+.forgot-pass {
+  width: 550px; /* Set width of login form container */
+  border: 1px solid #ccc; /* Add border */
+  border-radius: 30px;  /* Adjust as needed for rounded corners */
+  background-color: #f0c28e;
+}

@@ -1,8 +1,8 @@
-.App {
-  text-align: center;
+ .App {
+  background-color: rgb(220, 222, 226);
 }
 
-.App-logo {
+/*.App-logo {
   height: 40vmin;
   pointer-events: none;
 }
@@ -11,9 +11,16 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+} */
+
+.jetbrains-mono-uniquifier {
+  font-family: "JetBrains Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: weight;
+  font-style: normal;
 }
 
-.App-header {
+/* .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -35,4 +42,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */
