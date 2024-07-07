@@ -8,18 +8,22 @@ import HomePage from "./Home/HomePage.jsx";
 import NewUser from "./User/NewUser.jsx";
 import ViewUsers from "./User/ViewUsers.jsx";
 import NewCompany from "./Company/NewCompany.jsx"
+import NewCompany1 from "./Company/NewCompany1.jsx"
 import NewProduct from "./Product/NewProduct.jsx"
+import ViewVisits from "./Visit/ViewVisits.jsx"
 
 
 function App() {
   return (
     <div className="App">
       {/* <LoginPage/>       */}
-      <HomePage/>
+      {/* <HomePage/> */}
       {/* <NewUser/> */}
       {/* <ViewUsers/> */}
-      {/* <NewCompany/> */}
       {/* <NewProduct/> */}
+      {/* <NewCompany/> */}
+      <NewCompany1/>
+      {/* <ViewVisits/> */}
     </div>
   );
 }

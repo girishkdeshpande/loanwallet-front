@@ -20,6 +20,10 @@
   font-style: normal;
 }
 
+.label-color {
+  background-color: #f0c28e;
+}
+
 /* .App-header {
   background-color: #282c34;
   min-height: 100vh;

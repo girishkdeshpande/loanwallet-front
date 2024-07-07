@@ -12,7 +12,7 @@ const ViewUsers = () => {
                 <a href="#">Home</a>
               </li>
               <li className="breadcrumb-item">
-                <a>User</a>
+                User
               </li>
               <li className="breadcrumb-item" aria-current="page">
                 View
@@ -45,7 +45,7 @@ const ViewUsers = () => {
           </select>
         </div>
 
-        <hr className="bg-dark mt-1"></hr>
+        <hr className="bg-dark"></hr>
 
         <div
           className="card float-start ms-4 bg-secondary"

@@ -38,7 +38,7 @@ const HomePage = () => {
             id="offcanvasLeft"
             aria-labelledby="offcanvasLeftLabel"
           >
-            <div className="offcanvas-header bg-info">
+            <div className="offcanvas-header label-color">
               <h6
                 className="offcanvas-title text-secondary"
                 id="offcanvasLeftLabel"
@@ -287,8 +287,7 @@ const HomePage = () => {
                   </a>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item mx-3">
                   <a className="nav-link" href="#">
@@ -334,8 +333,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown mx-3">
                   <a className="nav-link" href="#">
@@ -372,8 +370,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown mx-3">
                   <a className="nav-link" href="#">
@@ -415,8 +412,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown mx-3">
                   <a className="nav-link" href="#">
@@ -440,8 +436,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown mx-3">
                   <a className="nav-link" href="#">
@@ -473,8 +468,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown mx-3">
                   <a className="nav-link" href="#">
@@ -506,8 +500,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown mx-3">
                   <a className="nav-link" href="#">
@@ -554,8 +547,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown mx-3">
                   <a className="nav-link" href="#">
@@ -575,8 +567,7 @@ const HomePage = () => {
                   </ul>
                 </li>
                 <div
-                  className="vr mt-2 text-danger"
-                  style={{ height: 30, width: 3 }}
+                  className="vr mt-2 text-danger vr-style"
                 ></div>
                 <li className="nav-item dropdown ms-3">
                   <a className="nav-link" href="#">
@@ -623,7 +614,7 @@ const HomePage = () => {
             id="offcanvasRight"
             aria-labelledby="offcanvasRightLabel"
           >
-            <div className="offcanvas-header">
+            <div className="offcanvas-header label-color">
               <h5 className="offcanvas-title" id="offcanvasRightLabel">
                 Notifications
               </h5>

@@ -3,7 +3,7 @@ import avatar from "D:/loanwallet-front/src/Image/user_avatar.jpg";
 
 const NewUser = ({ handleMenuClick }) => {
   return (
-    <div className="container-fluid w-100 h-75 m-0">
+    <div className="container-fluid w-100 h-75">
       <div className="row">
         <div className="col-12">
           <nav aria-label="breadcrumb">
@@ -14,7 +14,7 @@ const NewUser = ({ handleMenuClick }) => {
                 </a>
               </li>
               <li class="breadcrumb-item">
-                <a>User</a>
+                User
               </li>
               <li class="breadcrumb-item" aria-current="page">
                 New User
@@ -24,11 +24,11 @@ const NewUser = ({ handleMenuClick }) => {
 
           {/* <hr></hr> */}
 
-          <div className="container rounded w-100 h-100 mx-auto">
+          <div className="container-fluid rounded w-100 h-100 mx-auto">
             <form>
               <div className="row">
-                <div className="col-4 mt-3">
-                  <label className="col-12 bg-info rounded text-center col-form-label col-form-label-sm fw-normal fs-6">
+                <div className="col-4 mt-1">
+                  <label className="col-12 label-color rounded text-center col-form-label col-form-label-sm fw-normal fs-6">
                     Primary Information
                   </label>
                   <div className="float-start w-100 mt-2">
@@ -71,8 +71,8 @@ const NewUser = ({ handleMenuClick }) => {
                   </div>
                 </div>
 
-                <div className="col-4 mt-3">
-                  <label className="col-12 bg-info rounded text-center col-form-label col-form-label-sm fw-normal fs-6">
+                <div className="col-4 mt-1">
+                  <label className="col-12 label-color rounded text-center col-form-label col-form-label-sm fw-normal fs-6">
                     Profile Picture
                   </label>
                   <div>
@@ -101,8 +101,8 @@ const NewUser = ({ handleMenuClick }) => {
                   </div>
                 </div>
 
-                <div className="col-4 mt-3">
-                  <label className="col-12 bg-info rounded text-center col-form-label col-form-label-sm fw-normal fs-6">
+                <div className="col-4 mt-1">
+                  <label className="col-12 label-color rounded text-center col-form-label col-form-label-sm fw-normal fs-6">
                     Set Password
                   </label>
                   <div className="float-start w-100 mt-2">

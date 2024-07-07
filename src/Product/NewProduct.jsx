@@ -712,7 +712,7 @@ const NewProduct = () => {
                   />
                 </div>
               </div>
-              <div>
+              <div className="d-flex mx-auto my-auto justify-content-center">
                 <button className="btn btn-primary mx-3 mt-3">Cancel</button>
                 <button className="btn btn-primary mx-3 mt-3">Submit</button>
               </div>

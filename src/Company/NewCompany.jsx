@@ -89,38 +89,47 @@ const NewCompany = () => {
                     required
                   />
                 </div>
-                <div className="col-3">
-                  <input
-                    type="text"
-                    className="form-control my-2"
-                    aria-describedby="customerRepresentative"
-                    placeholder="Customer Representative"
-                    required
-                  />
+                <div className="col-2 my-2"> 
+                  <input className="form-control" list="datalistOptions" id="exampleDataList" placeholder="Customer Repesentative..."/>
+                    <datalist id="datalistOptions">
+                      <option value="Swapnil Vyavahare"/>
+                      <option value="Vaibhav Jadhav"/>
+                      <option value="Jai Shilwant"/>
+                      <option value="Vicky"/>
+                    </datalist>
                 </div>
 
                 <div className="col-12">
-                  <label className="bg-info rounded text-start col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
-                    Contact Person
+                  <label className="bg-info d-flex rounded justify-content-between text-start col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
+                  <span>Contact Person</span><a href="#" className="text-dark">Add</a>
                   </label>
                 </div>
                 <div className="col-2 my-2">
                   <input
                     type="text"
                     className="form-control"
-                    aria-describedby="fullName"
-                    placeholder="Full Name"
+                    aria-describedby="firstName"
+                    placeholder="First Name"
                     required
                   />
                 </div>
-                <div className="col-3 my-2">
+                <div className="col-2 my-2">
                   <input
                     type="text"
                     className="form-control"
-                    aria-describedby="designation"
-                    placeholder="Designation"
+                    aria-describedby="lastName"
+                    placeholder="Last Name"
                     required
                   />
+                </div>
+                <div className="col-2 my-2">
+                <input className="form-control" list="designationList" id="designationOpt" placeholder="Designation"/>
+                    <datalist id="designationList">
+                      <option value="Owner"/>
+                      <option value="Head"/>
+                      <option value="Accountant"/>
+                      <option value="Supervisor"/>
+                    </datalist>
                 </div>
                 <div className="col-3 my-2">
                   <input
@@ -131,7 +140,7 @@ const NewCompany = () => {
                     required
                   />
                 </div>
-                <div className="col-3 my-2">
+                <div className="col-2 my-2">
                   <input
                     type="text"
                     className="form-control"
@@ -343,7 +352,7 @@ const NewCompany = () => {
                       id="flexCheckDefault"
                     />
                     <label className="form-check-label" for="flexCheckDefault">
-                      Alluminium Alloys
+                      Aluminium Alloys
                     </label>
                   </div>
                 </div>
@@ -394,10 +403,20 @@ const NewCompany = () => {
                       value=""
                       id="flexCheckDefault"
                     />
-                    <label className="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                       Copper Alloys
                     </label>
                   </div>
+                </div>
+                <div className="col-2 my-1"> 
+                  <input className="form-control visually-hidden" list="datalistOptions" id="exampleDataList" placeholder="Select Copper Alloy" disabled/>
+                    <datalist id="datalistOptions">
+                      <option value="San Francisco"/>
+                      <option value="New York"/>
+                      <option value="Seattle"/>
+                      <option value="Los Angeles"/>
+                      <option value="Chicago"/>
+                    </datalist>
                 </div>
 
                 <div className="col-12">
@@ -414,7 +433,6 @@ const NewCompany = () => {
                   <input
                     className="form-control mt-1 w-50"
                     type="text"
-                    placeholder=""
                   />
                 </div>
                 <div className="col-2">
@@ -518,8 +536,8 @@ const NewCompany = () => {
                 </div>
 
                 <div className="col-12">
-                  <label className="bg-info rounded col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
-                    Capex Details<a href="#">Add</a>
+                  <label className="bg-info d-flex justify-content-between rounded col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
+                    <span>Capex Details</span><a href="#" className="text-dark">Add</a>
                   </label>
                 </div>
                 <div className="col-2 my-2">
@@ -610,7 +628,7 @@ const NewCompany = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="d-flex mx-auto my-auto justify-content-center">
                 <button className="btn btn-primary mx-3 mt-3">Cancel</button>
                 <button className="btn btn-primary mx-3 mt-3">Submit</button>
               </div>
