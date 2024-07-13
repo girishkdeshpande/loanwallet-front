@@ -6,7 +6,8 @@ const NewUser = ({ handleMenuClick }) => {
     <div className="container-fluid w-100 h-75">
       <div className="row">
         <div className="col-12">
-          <nav aria-label="breadcrumb">
+        <label className="col-12 bg-info rounded text-start col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-2">New User</label>
+          {/* <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="#" onClick={() => handleMenuClick("Home")}>
@@ -20,7 +21,7 @@ const NewUser = ({ handleMenuClick }) => {
                 New User
               </li>
             </ol>
-          </nav>
+          </nav> */}
 
           {/* <hr></hr> */}
 

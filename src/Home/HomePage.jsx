@@ -2,18 +2,21 @@
 // import Logo1 from "D:/loanwallet-front/src/Image/v-square_02.png";
 import avatar from "D:/loanwallet-front/src/Image/user_avatar.jpg";
 import "./HomePage.css";
-import NewUser from "../User/NewUser";
+import NewUser1 from "../User/NewUser1";
 import HomeCarousel from "./HomeCarousel.jsx";
 import { useState } from "react";
+import NewCompany1 from "../Company/NewCompany1.jsx";
 
 const HomePage = () => {
   const [showNewUser, setShowNewUser] = useState(false);
+  const [showNewCompany, setShowNewCompany] = useState(false);
 
   const handleMenuClick = (component) => {
     if (component === "NewUser") {
       setShowNewUser(true);
-    } else {
+    } else if (component === "NewCompany") {
       setShowNewUser(false);
+      setShowNewCompany(true);
     }
   };
 
@@ -304,7 +307,7 @@ const HomePage = () => {
                   </a>
                   <ul className="dropdown-menu">
                     <li>
-                      <a className="dropdown-item" href="#">
+                      <a className="dropdown-item" href="#" onClick={() => handleMenuClick("NewCompany")}>
                         Add New
                       </a>
                     </li>
@@ -633,11 +636,11 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <hr></hr>
+        {/* <hr></hr> */}
       </div>
       {showNewUser ? (
-        <NewUser handleMenuClick={handleMenuClick} />
-      ) : (
+        <NewUser1 handleMenuClick={handleMenuClick} />
+      ) : showNewCompany ? (<NewCompany1 handleMenuClick={handleMenuClick} />) : (
         <HomeCarousel />
       )}
     </div>
