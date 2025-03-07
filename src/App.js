@@ -1,36 +1,68 @@
 // import logo from "./logo.svg";
-import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import LoginPage from "./Login/LoginPage.jsx";
-import "./Login/LoginPage.css";
-import HomePage from "./Home/HomePage.jsx";
-import NewUser from "./User/NewUser.jsx";
-import NewUser1 from "./User/NewUser1.jsx";
-import ViewUsers from "./User/ViewUsers.jsx";
-import NewCompany from "./Company/NewCompany.jsx";
-import NewCompany1 from "./Company/NewCompany1.jsx";
-import NewProduct from "./Product/NewProduct.jsx";
-import ViewVisits from "./Visit/ViewVisits.jsx";
-import NewProduct1 from "./Product/NewProduct1.jsx";
-import NewQuotation from "./Quotation/NewQuotation.jsx";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "./App.css";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AppRoutes from "./Routes/ConsolidatedRoutes.js";
+import NewUser from "./Pages/User/NewUser.jsx";
+import ViewUsers from "./Pages/User/ViewUsers.jsx";
+import NewCompany from "./Pages/Company/NewCompany.jsx";
+import ViewCompany from "./Pages/Company/ViewCompany.jsx";
+import NewProduct from "./Pages/Product/NewProduct.jsx";
+import ViewProduct from "./Pages/Product/ViewProduct.jsx";
+import ViewVisits from "./Pages/Visit/ViewVisits.jsx";
+import NewQuotation from "./Pages/Quotation/NewQuotation.jsx";
+import ViewQuotation from "./Pages/Quotation/ViewQuotation.jsx";
+import ViewExpense from "./Pages/Expense/ViewExpense.jsx";
+import EmailTemplate from "./Pages/Email/EmailTemplate.jsx";
+import ViewTodo from "./Pages/Todo/ViewTodo.jsx";
+import ViewTransactions from "./Pages/Sales/ViewTransactions.jsx";
+import { BrowserRouter, Router, Routes } from "react-router-dom";
+
+import { useState } from "react";
 
 function App() {
+
   return (
-    <div className="App">
-      <LoginPage/>      
-      {/* <HomePage/> */}
-      {/* <NewUser/> */}
-      {/* <NewUser1/> */}
-      {/* <ViewUsers/> */}
-      {/* <NewProduct/> */}
-      {/* <NewProduct1/> */}
-      {/* <NewCompany/> */}
-      {/* <NewCompany1/> */}
-      {/* <ViewVisits/> */}
-      {/* <NewQuotation/> */}
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+        <Routes>
+          {AppRoutes()}
+          {/* <ViewCompany /> */}
+          {/* <ResetPassword/> */}
+          {/* <HomePage/> */}
+          {/* <SubHeader/> */}
+          {/* <NewUser/> */}
+          {/* <ViewUsers/> */}
+          {/* <NewProduct/> */}
+          {/* <NewCompany/> */}
+          {/* <ForgotPassword /> */}
+          {/* <ViewProduct/> */}
+          {/* <ViewVisits/> */}
+          {/* <NewQuotation/> */}
+          {/* <ViewQuotation/> */}
+          {/* <ViewExpense/> */}
+          {/* <EmailTemplate/> */}
+          {/* <ViewTodo/> */}
+          {/* <ViewTransactions/> */}
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 

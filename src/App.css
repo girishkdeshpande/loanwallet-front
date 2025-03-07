@@ -2,6 +2,17 @@
   background-color: rgb(220, 222, 226);
 }
 
+.custom-tabs .nav-link {
+  /*border: 1px solid #007bff; /* Change to your desired color */
+  /* color: #007bff; */
+  background-color: rgb(220, 222, 226);
+}
+
+.custom-tabs .nav-link.active {
+  border-color: None; /* Border color for active tab */
+  /* color: #28a745; */
+  background-color: rgb(220, 222, 226);
+}
 /*.App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -13,15 +24,17 @@
   }
 } */
 
-.jetbrains-mono-uniquifier {
-  font-family: "JetBrains Mono", monospace;
-  font-optical-sizing: auto;
-  font-weight: weight;
-  font-style: normal;
-}
 
 .label-color {
   background-color: #f0c28e;
+}
+
+.menu-pointer {
+  cursor: pointer;
+}
+
+.text-color {
+  color: mediumblue !important;
 }
 
 /* .App-header {
