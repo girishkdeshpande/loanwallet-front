@@ -1,0 +1,26 @@
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border-width: 10px;
+  border-color: black;
+  border-style: solid;
+}
+
+.table-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 500px; /* Adjust based on UI */
+}
+
+.pagination-wrapper {
+  margin-top: auto; /* Pushes pagination to the bottom */
+  text-align: center;
+  width: 100%;
+  background-color: rgb(220, 222, 226);
+}
+
+.pagination-button {
+  background-color: rgb(190, 215, 51);
+}

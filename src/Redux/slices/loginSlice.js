@@ -73,6 +73,18 @@ export const setForgotPassword = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  "user/reset-password",
+  async (resetPassData, thunkAPI) => {
+    try {
+      const response = await api.put("user/reset-password", resetPassData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 const loginSlice = createSlice({
   name: "login",
   initialState: {
@@ -109,6 +121,12 @@ const loginSlice = createSlice({
       setPasswordLoading: false,
       setPasswordError: null,
     },
+
+    resetPasswordState: {
+      resetPasswordData: null,
+      resetPasswordLoading: false,
+      resetPasswordError: null,
+    },
   },
 
   reducers: {
@@ -128,6 +146,13 @@ const loginSlice = createSlice({
         loginLoading: false,
         loginError: null,
         accessToken: null,
+      };
+    },
+    resetResetPasswordState: (state) => {
+      state.resetPasswordState = {
+        resetPasswordData: null,
+        resetPasswordLoading: false,
+        resetPasswordError: null,
       };
     },
   },
@@ -202,6 +227,20 @@ const loginSlice = createSlice({
       .addCase(setForgotPassword.rejected, (state, action) => {
         state.setPasswordState.setPasswordLoading = false;
         state.setPasswordState.setPasswordError = action.payload.error;
+      })
+
+      // Handle reset password
+      .addCase(resetPassword.pending, (state) => {
+        state.resetPasswordState.resetPasswordLoading = true;
+        state.resetPasswordState.resetPasswordError = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.resetPasswordState.resetPasswordLoading = false;
+        state.resetPasswordState.resetPasswordData = action.payload;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.resetPasswordState.resetPasswordLoading = false;
+        state.resetPasswordState.resetPasswordError = action.payload.error;
       });
   },
 });
@@ -209,4 +248,5 @@ const loginSlice = createSlice({
 export const { forgotPasswordValues } = loginSlice.actions;
 export const { resetLogoutState } = loginSlice.actions;
 export const { resetLoginState } = loginSlice.actions;
+export const { resetResetPasswordState } = loginSlice.actions;
 export default loginSlice.reducer;

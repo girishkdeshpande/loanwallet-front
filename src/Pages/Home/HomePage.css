@@ -1,10 +1,9 @@
 
-.menu_bar {
-  background-color: rgb(220, 222, 226);
-}
-
 .container-fluid{
-  height: 100vh;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  min-height: 100vh !important;
+  padding-top: 56px;
 }
 
 .custom_img{
@@ -12,29 +11,20 @@
   width: 50%;
 }
 
-.bell-icon{
-  width: 60px;
-  height: 40px;
+.navbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  /* overflow: hidden; */
 }
-
-.img_size{
-  width: 80px;
-  height: 30px;
-}
-
-.vr-style {
-  height: 30px;
-  width: 3px
-}
-
-.navbar-nav .dropdown-menu {
+/* .navbar-nav .dropdown-menu {
   display: none;
   position: absolute;
   left: 0;
   top: 100%;
   margin-top: 0;
   background-color: rgb(220, 222, 226);
-}
+} */
 
 .navbar-nav .dropdown-item:hover > .dropdown-menu {
   display: block;
@@ -44,26 +34,26 @@
   display: block;
 }
 
-.navbar-nav .dropdown-submenu {
+/* .navbar-nav .dropdown-submenu {
   position: relative;
-}
+} */
 
-.navbar-nav .dropdown-submenu:hover > .dropdown-menu {
+/* .navbar-nav .dropdown-submenu:hover > .dropdown-menu {
   display: block;
-}
+} */
 
-.navbar-nav .dropdown-menu > .dropdown-submenu > .dropdown-menu {
+/* .navbar-nav .dropdown-menu > .dropdown-submenu > .dropdown-menu {
   left: 100%;
   top: 0;
   margin-top: 0;
-}
+} */
 
-.navbar-nav .dropdown-submenu > .dropdown-item:after {
+/* .navbar-nav .dropdown-submenu > .dropdown-item:after {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
-  content: "\f054"; /*Font Awesome icon code for a right arrow*/
+  content: "\f054"; Font Awesome icon code for a right arrow
   float: left;
-}
+} */
 
 .navbar-nav .dropdown-menu .dropdown-item {
   display: flex;
@@ -76,13 +66,12 @@
   background-color: whitesmoke;
 }
 
-/* .navbar-nav {
-  display: flex;
-  justify-content: space-around;
-  width: 50%;
-} */
+.dropdown-item:hover, 
+.dropdown-item:focus, 
+.dropdown-item.active {
+  background-color: #007bff !important; /*Change to your desired color*/
+}
 
-.offcanvas_img{
-  width: 150px;
-  height: 150px;
+.custom_setting_input {
+  width: 40px;
 }

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import { setForgotPassword } from "../../Redux/slices/loginSlice";
-import { resetPaswordValidation } from "../../Utilities/validations";
+import { forgotPasswordValidation } from "../../Utilities/validations";
 
 const ResetPassword = () => {
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ const ResetPassword = () => {
     e.preventDefault();
 
     // Stop execution if validation fails
-    if (!resetPaswordValidation(newPassword, confirmPassword, setNewPasswordError, setConfirmPasswordError)) {
+    if (!forgotPasswordValidation(newPassword, confirmPassword, setNewPasswordError, setConfirmPasswordError)) {
       return;
     }
 

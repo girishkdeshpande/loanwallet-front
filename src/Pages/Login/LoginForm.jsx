@@ -28,13 +28,11 @@ const LoginForm = () => {
       toast.success("Login Successful", {className: "toast-font"});
       navigate("/homepage");
     }
-  }, [loginData, navigate]);
 
-  useEffect(() => {
     if (loginError) {
       toast.error(loginError, {className: "toast-font"});
     }
-  }, [loginError]);
+  }, [loginData, loginError, navigate]);
 
   const handleLoginClick = (event) => {
     event.preventDefault();

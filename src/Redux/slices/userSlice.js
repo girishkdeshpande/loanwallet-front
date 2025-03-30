@@ -1,18 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api.js";
 
-export const allUsers = createAsyncThunk("user", async (thunkAPI) => {
+export const AllUsers = createAsyncThunk("user", async (thunkAPI) => {
   try {
-    const response = await api.get("user");
+    const response = await api.get("user/");
     return response.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data);
   }
 });
 
-export const registerUser = createAsyncThunk(
+export const RegisterUser = createAsyncThunk(
   "user/signup",
   async (userData, thunkAPI) => {
+    console.log("user payload", userData);
     try {
       const response = await api.post("user/signup", userData);
       return response.data;
@@ -22,7 +23,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-export const searchUser = createAsyncThunk(
+export const SearchUser = createAsyncThunk(
   "user/search_user",
   async (searchData, thunkAPI) => {
     try {
@@ -45,9 +46,9 @@ export const singleUser = createAsyncThunk("user/", async (id, thunkAPI) => {
 
 export const updateUser = createAsyncThunk(
   "user/update/",
-  async (id, thunkAPI) => {
+  async ({updateData, id}, thunkAPI) => {
     try {
-      const response = await api.put(`user/update/${id}`);
+      const response = await api.put(`user/update/${id}`, updateData);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
@@ -84,7 +85,23 @@ const userSlice = createSlice({
       updateUserError: null,
     },
   },
-  reducers: {},
+  reducers: {
+    resetUpdateUserState: (state) => {
+      state.updateUserState = {
+        updateUserData: null,
+        updateUserLoading: false,
+        updateUserError: null,
+      }
+    },
+
+    resetRegisterUserState: (state) => {
+      state.registerUserState = {
+        registerUserData: null,
+        registerUserLoading: false,
+        registerUserError: null,
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Handles update user
@@ -93,10 +110,7 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.updateUserState.updateUserLoading = false;
-        state.updateUserState.updateUserData = {
-          ...state.updateUserState.updateUserData,
-          ...action.payload,
-        };
+        state.updateUserState.updateUserData = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.updateUserState.updateUserLoading = false;
@@ -117,40 +131,40 @@ const userSlice = createSlice({
       })
 
       // Handle search user
-      .addCase(searchUser.pending, (state) => {
+      .addCase(SearchUser.pending, (state) => {
         state.searchUserState.searchUserLoading = true;
       })
-      .addCase(searchUser.fulfilled, (state, action) => {
+      .addCase(SearchUser.fulfilled, (state, action) => {
         state.searchUserState.searchUserLoading = false;
         state.searchUserState.searchUserData = action.payload;
       })
-      .addCase(searchUser.rejected, (state, action) => {
+      .addCase(SearchUser.rejected, (state, action) => {
         state.searchUserState.searchUserLoading = false;
         state.searchUserState.searchUserError = action.payload.error;
       })
 
       // Handle register user
-      .addCase(registerUser.pending, (state) => {
+      .addCase(RegisterUser.pending, (state) => {
         state.registerUserState.registerUserLoading = true;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(RegisterUser.fulfilled, (state, action) => {
         state.registerUserState.registerUserLoading = false;
         state.registerUserState.registerUserData = action.payload;
       })
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase(RegisterUser.rejected, (state, action) => {
         state.registerUserState.registerUserLoading = false;
         state.registerUserState.registerUserError = action.payload.error;
       })
 
       // Handle all users
-      .addCase(allUsers.pending, (state) => {
+      .addCase(AllUsers.pending, (state) => {
         state.allUsersState.allUsersLoading = true;
       })
-      .addCase(allUsers.fulfilled, (state, action) => {
+      .addCase(AllUsers.fulfilled, (state, action) => {
         state.allUsersState.allUsersLoading = false;
         state.allUsersState.allUsersData = action.payload;
       })
-      .addCase(allUsers.rejected, (state, action) => {
+      .addCase(AllUsers.rejected, (state, action) => {
         state.allUsersState.allUsersLoading = false;
         state.allUsersState.allUsersError = action.payload.error;
       })
@@ -158,4 +172,6 @@ const userSlice = createSlice({
 });
 
 export const { resetLogoutState } = userSlice.actions;
+export const {resetUpdateUserState} = userSlice.actions;
+export const {resetRegisterUserState} = userSlice.actions;
 export default userSlice.reducer;

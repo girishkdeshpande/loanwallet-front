@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api.js";
 
-export const customSetting = createAsyncThunk(
+export const CustomSetting = createAsyncThunk(
   "user/custom-setting",
   async (thunkAPI) => {
     try {
@@ -13,7 +13,19 @@ export const customSetting = createAsyncThunk(
   }
 );
 
-export const notification = createAsyncThunk(
+export const UpdateCustomSetting = createAsyncThunk(
+  "user/update-custom-setting",
+  async (updateData, thunkAPI) => {
+    try {
+      const response = await api.put("user/custom-setting", updateData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
+
+export const Notification = createAsyncThunk(
   "notification",
   async (thunkAPI) => {
     try {
@@ -32,6 +44,11 @@ const otherSlice = createSlice({
       customSettingData: null,
       customSettingLoading: false,
       customSettingError: null,
+    },
+    updateCustomSettingState: {
+      updateCustomSettingData: null,
+      updateCustomSettingLoading: false,
+      updateCustomSettingError: null,
     },
     notificationState: {
         notificationData: null,
@@ -53,31 +70,49 @@ const otherSlice = createSlice({
         notificationLoading: false,
         notificationError: null,
       }
-    }
+    },
+    // resetCustomSettingUpdateState: (state) => {
+    //   state.customSettingState.isCustomSettingUpdated = false;
+    // },
   },
   extraReducers: (builder) => {
     builder
     
-      .addCase(customSetting.pending, (state) => {
+      // handles get custom settings
+      .addCase(CustomSetting.pending, (state) => {
         state.customSettingState.customSettingLoading = true;
       })
-      .addCase(customSetting.fulfilled, (state, action) => {
+      .addCase(CustomSetting.fulfilled, (state, action) => {
         state.customSettingState.customSettingLoading = false;
         state.customSettingState.customSettingData = action.payload;
       })
-      .addCase(customSetting.rejected, (state, action) => {
+      .addCase(CustomSetting.rejected, (state, action) => {
         state.customSettingState.customSettingLoading = false;
         state.customSettingState.customSettingError = action.payload.error;
       })
       
-      .addCase(notification.pending, (state) => {
+      // handles update custom settings
+      .addCase(UpdateCustomSetting.pending, (state) => {
+        state.updateCustomSettingState.updateCustomSettingLoading = true;
+      })
+      .addCase(UpdateCustomSetting.fulfilled, (state, action) => {
+        state.updateCustomSettingState.updateCustomSettingLoading = false;
+        state.updateCustomSettingState.updateCustomSettingData = action.payload;
+      })
+      .addCase(UpdateCustomSetting.rejected, (state, action) => {
+        state.updateCustomSettingState.updateCustomSettingLoading = false;
+        state.updateCustomSettingState.updateCustomSettingError = action.payload.error;
+      })
+
+      // handles notifications
+      .addCase(Notification.pending, (state) => {
         state.notificationState.notificationLoading = true;
       })
-      .addCase(notification.fulfilled, (state, action) => {
+      .addCase(Notification.fulfilled, (state, action) => {
         state.notificationState.notificationLoading = false;
         state.notificationState.notificationData = action.payload;
       })
-      .addCase(notification.rejected, (state, action) => {
+      .addCase(Notification.rejected, (state, action) => {
         state.notificationState.notificationLoading = false;
         state.notificationState.notificationError = action.payload.error;
       });
@@ -86,4 +121,5 @@ const otherSlice = createSlice({
 
 export const {resetCustomSettingState} = otherSlice.actions;
 export const {resetNotificationState} = otherSlice.actions;
+// export const {resetCustomSettingUpdateState} = otherSlice.actions;
 export default otherSlice.reducer;

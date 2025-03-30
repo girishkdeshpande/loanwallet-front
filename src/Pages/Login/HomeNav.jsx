@@ -295,14 +295,15 @@ const HomeNav = () => {
                     Dashboard
                   </a>
                 </li>
-                <div
-                  className="vr mt-2 text-dark vr-style"
-                ></div>
+                <div className="vr mt-2 text-dark vr-style"></div>
                 <li className="nav-item dropdown mx-2 mt-2">
                   {/* <a className="nav-link" href="#">
                     Company
                   </a> */}
-                  <span className="badge text-body-secondary fs-6 fw-normal" href="#">
+                  <span
+                    className="badge text-body-secondary fs-6 fw-normal"
+                    href="#"
+                  >
                     Company
                   </span>
                   <ul className="dropdown-menu">
@@ -350,9 +351,7 @@ const HomeNav = () => {
                   <ul className="dropdown-menu">
                     <li>
                       {/* <a className="dropdown-item" href="#"> */}
-                      <a className="badge text-bg-secondary">
-                        Add New
-                      </a>
+                      <a className="badge text-bg-secondary">Add New</a>
                     </li>
                     <li className="dropdown-submenu">
                       <a className="dropdown-item" href="#">

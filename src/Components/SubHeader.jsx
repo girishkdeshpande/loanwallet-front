@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import NewCompany from "../Pages/Company/NewCompany";
+import NewUser from "../Pages/User/NewUser";
 
 const SubHeader = ({ header }) => {
   const [isSearchEnabled, setIsSearchEnabled] = useState(false);
@@ -92,7 +93,7 @@ const SubHeader = ({ header }) => {
               </div>
             </nav>
           </div>
-          {isNewClicked && header === "Company" ? <NewCompany /> : ""}
+          {isNewClicked && header === "User" ? <NewUser /> : ""}
           {isSearchEnabled ? (
             <div className="col-6 float-end mt-5 mb-2">
               <form className="d-flex me-2" role="search">

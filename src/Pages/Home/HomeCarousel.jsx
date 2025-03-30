@@ -4,7 +4,7 @@ import "./HomePage.css";
 
 const HomeCarousel = () => {
   return (
-    <div className="container-fluid mt-5">
+    <div className="container-fluid">
       <div className="col-12 ">
         <div id="demo" className="carousel slide" data-bs-ride="carousel">
           {/* <!-- Indicators/dots --> */}

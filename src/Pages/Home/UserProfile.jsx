@@ -1,27 +1,51 @@
 import avatar from "D:/loanwallet-front/src/Assets/Images/user_avatar.jpg";
+import { resetPasswordValidation } from "../../Utilities/validations";
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { LogoutData, resetLoginState, resetLogoutState } from "../../Redux/slices/loginSlice";
-import { singleUser } from "../../Redux/slices/userSlice";
 import {
-  customSetting,
+  LogoutData,
+  resetLoginState,
+  resetLogoutState,
+  resetPassword,
+  resetResetPasswordState,
+} from "../../Redux/slices/loginSlice";
+import {
+  singleUser,
+  updateUser,
+  resetUpdateUserState,
+} from "../../Redux/slices/userSlice";
+import {
+  CustomSetting,
+  UpdateCustomSetting,
   resetCustomSettingState,
   resetNotificationState,
 } from "../../Redux/slices/otherSlice";
 
-const UserOffCanvas = ({ handleUserClose }) => {
+const UserProfile = ({ handleUserClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { singleUserData } = useSelector((state) => state.user.singleUserState);
-  const { customSettingData } = useSelector((state) => state.other.customSettingState);
+  const { updateUserData, updateUserLoading, updateUserError } = useSelector(
+    (state) => state.user.updateUserState
+  );
   const { logoutData, logoutLoading, logoutError } = useSelector(
     (state) => state.login.logoutState
   );
+  const { resetPasswordData, resetPasswordLoading, resetPasswordError } =
+    useSelector((state) => state.login.resetPasswordState);
+  const { customSettingData } = useSelector(
+    (state) => state.other.customSettingState
+  );
+  const {
+    updateCustomSettingData,
+    updateCustomSettingLoading,
+    updateCustomSettingError,
+  } = useSelector((state) => state.other.updateCustomSettingState);
 
   const [isUserSettingClicked, setIsUserSettingClicked] = useState(false);
   const [isUserSettingEdit, setIsUserSettingEdit] = useState(false);
@@ -30,18 +54,21 @@ const UserOffCanvas = ({ handleUserClose }) => {
   const [isUserSettingDisabled, setIsUserSettingDisabled] = useState(false);
 
   const [isCustomSettingClicked, setIsCustomSettingClicked] = useState(false);
-  const [customSettingDataDisabled, setCustomSettingDataDisabled] = useState(true);
+  const [customSettingDataDisabled, setCustomSettingDataDisabled] =
+    useState(true);
   const [isCustomSettingEdit, setIsCustomSettingEdit] = useState(false);
   const [isCustomSettingSave, setIsCustomSettingSave] = useState(false);
   const [isCustomSettingDisabled, setIsCustomSettingDisabled] = useState(false);
 
   const [individualUserData, setIndividualUserData] = useState({});
-  const [customSettingResult, setCustomSettingResult] = useState({
-    notificationDays: "",
-    carExpense: "",
-    twoWheelerExpense: "",
-    visitSummaryCount: "",
-    emailAddress: "",
+  const [customSettingResult, setCustomSettingResult] = useState(null);
+  const [isUserDetailsChanged, setIsUserDetailsChanged] = useState(false);
+  const [isResetPasswordChanged, setIsResetPasswordChanged] = useState(false);
+
+  const [resetPasswordInfo, setResetPasswordInfo] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const userId = localStorage.getItem("id");
@@ -55,41 +82,106 @@ const UserOffCanvas = ({ handleUserClose }) => {
 
   useEffect(() => {
     if (singleUserData && Object.keys(singleUserData).length > 0) {
-      setIndividualUserData(singleUserData);
+      setIndividualUserData({
+        ...singleUserData,
+        full_name: `${singleUserData.first_name} ${singleUserData.last_name}`,
+      });
       if (singleUserData.isAdmin === true) {
-        dispatch(customSetting());
+        dispatch(CustomSetting());
       }
     }
   }, [dispatch, singleUserData]);
 
   useEffect(() => {
     if (customSettingData) {
-      setCustomSettingResult({
-        notificationDays: customSettingData.data.notification_days,
-        carExpense: customSettingData.data.vehicalCarRate,
-        twoWheelerExpense: customSettingData.data.vehicalBikeRate,
-        visitSummaryCount: customSettingData.data.visit_summary_word_count,
-        emailAddress: customSettingData.data.email.join("\n"),
-      });
+      setCustomSettingResult(customSettingData.data);
     }
   }, [customSettingData]);
 
   useEffect(() => {
     if (logoutData) {
-      toast.success(logoutData.data, {className: "toast-font"});
+      toast.success(logoutData.data, { className: "toast-font" });
+      setIsUserDetailsChanged(false);
+      setIsResetPasswordChanged(false);
       dispatch(resetLoginState());
       dispatch(resetCustomSettingState());
       dispatch(resetNotificationState());
       dispatch(resetLogoutState());
+      dispatch(resetResetPasswordState());
+      dispatch(resetUpdateUserState());
       navigate("/");
     }
-  }, [logoutData, navigate, dispatch]);
+
+    if (logoutError) {
+      toast.error(logoutError, { className: "toast-font" });
+    }
+  }, [logoutData, logoutError, navigate, dispatch]);
 
   useEffect(() => {
-    if (logoutError) {
-      toast.error(logoutError, {className: "toast-font"});
+    if (updateCustomSettingData) {
+      setIsCustomSettingSave(false);
+      setIsCustomSettingEdit(false);
+      setCustomSettingDataDisabled(true);
+      setIsCustomSettingDisabled(false);
+      toast.success(updateCustomSettingData.data, { className: "toast-font" });
     }
-  }, [logoutError]);
+
+    if (updateCustomSettingError) {
+      setIsCustomSettingSave(true);
+      setIsCustomSettingEdit(false);
+      setCustomSettingDataDisabled(false);
+      setIsCustomSettingDisabled(true);
+      toast.error(updateCustomSettingData.error, { className: "toast-font" });
+    }
+  }, [updateCustomSettingData, updateCustomSettingError]);
+
+  useEffect(() => {
+    if (isUserDetailsChanged && updateUserData) {
+      toast.success(updateUserData.data, { className: "toast-font" });
+      setIsUserSettingSave(false);
+      setIsUserSettingEdit(false);
+      setNavTabDisabled(true);
+      setIsUserSettingDisabled(false);
+      setIsUserDetailsChanged(false);
+    }
+    if (isResetPasswordChanged && resetPasswordData) {
+      toast.success(resetPasswordData.data, { className: "toast-font" });
+      setIsUserSettingSave(false);
+      setIsUserSettingEdit(false);
+      setNavTabDisabled(true);
+      setIsUserSettingDisabled(false);
+      setIsResetPasswordChanged(false);
+      setResetPasswordInfo({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      toast.info("Relogin with new password", { className: "toast-font" });
+      navigate("/");
+    }
+
+    if (updateUserError) {
+      toast.error(updateUserData, { className: "toast-font" });
+      setIsUserSettingSave(true);
+      setIsUserSettingEdit(false);
+      setNavTabDisabled(false);
+      setIsUserSettingDisabled(false);
+    }
+    if (resetPasswordError) {
+      setNavTabDisabled(false);
+      toast.error(resetPasswordError, { className: "toast-font" });
+      setIsUserSettingSave(true);
+      setIsUserSettingEdit(false);
+      // setNavTabDisabled(false);
+      setIsUserSettingDisabled(false);
+    }
+  }, [
+    updateUserData,
+    resetPasswordData,
+    updateUserError,
+    resetPasswordError,
+    navigate,
+  ]);
 
   const handleLogout = () => {
     dispatch(LogoutData(logoutPayload));
@@ -114,10 +206,39 @@ const UserOffCanvas = ({ handleUserClose }) => {
   };
 
   const handleUserSettingSave = () => {
-    setIsUserSettingSave(false);
-    setIsUserSettingEdit(false);
-    setNavTabDisabled(true);
-    setIsUserSettingDisabled(false);
+    if (isUserDetailsChanged) {
+      const nameParts = individualUserData.full_name.trim().split(" ");
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(" ");
+
+      let userPayload = {
+        id: individualUserData.id,
+        first_name: firstName,
+        last_name: lastName,
+        contactNo: individualUserData.contactNo,
+        address: individualUserData.address,
+      };
+
+      dispatch(updateUser({ updateData: userPayload, id: userPayload.id }));
+    }
+
+    if (isResetPasswordChanged) {
+      if (
+        resetPasswordInfo.oldPassword?.trim() &&
+        resetPasswordInfo.newPassword?.trim() &&
+        resetPasswordInfo.confirmPassword?.trim()
+      ) {
+        if (!resetPasswordValidation(resetPasswordInfo)) {
+          return;
+        }
+        let passwordPayload = {
+          old_password: resetPasswordInfo.oldPassword,
+          new_password: resetPasswordInfo.newPassword,
+          retype_password: resetPasswordInfo.confirmPassword,
+        };
+        dispatch(resetPassword(passwordPayload));
+      }
+    }
   };
 
   const handleCustomSetting = () => {
@@ -139,10 +260,40 @@ const UserOffCanvas = ({ handleUserClose }) => {
   };
 
   const handleCustomSettingSave = () => {
-    setIsCustomSettingSave(false);
-    setIsCustomSettingEdit(false);
-    setCustomSettingDataDisabled(true);
-    setIsCustomSettingDisabled(false);
+    let customPayload = {
+      ...customSettingResult,
+      email: customSettingResult.email
+        .split(",")
+        .map((email) => email.trim())
+        .filter((email) => email !== ""),
+    };
+
+    Object.keys(customPayload).forEach((key) => {
+      if (key !== "email") {
+        customPayload[key] = parseInt(customPayload[key], 10) || 0; // Convert to integer, default to 0 if NaN
+      }
+    });
+    dispatch(UpdateCustomSetting(customPayload));
+  };
+
+  const handleUserDetails = (event) => {
+    const { name, value } = event.target;
+    setIndividualUserData((prev) => ({ ...prev, [name]: value }));
+    setIsUserDetailsChanged(true);
+  };
+
+  const handleResetPassword = (event) => {
+    const { name, value } = event.target;
+    setResetPasswordInfo((prev) => ({ ...prev, [name]: value }));
+    setIsResetPasswordChanged(true);
+  };
+
+  const handleCustomSettingData = (event) => {
+    const { name, value } = event.target;
+    setCustomSettingResult((prev) => ({
+      ...prev,
+      [name]: name === "email" ? value : value,
+    }));
   };
 
   return (
@@ -158,8 +309,7 @@ const UserOffCanvas = ({ handleUserClose }) => {
             className="offcanvas-title text-secondary"
             id="OffcanvasLeftLabel"
           >
-            Hello ! {individualUserData?.first_name}{" "}
-            {individualUserData?.last_name}
+            Hello ! {individualUserData?.full_name}
           </h6>
           <button
             type="button"
@@ -175,7 +325,7 @@ const UserOffCanvas = ({ handleUserClose }) => {
             <img
               src={avatar}
               alt="..."
-              className="border border-dark d-flex rounded mx-auto offcanvas_img p-2"
+              className="border border-dark d-flex rounded mx-auto user-img p-2"
             />
           </div>
 
@@ -198,7 +348,18 @@ const UserOffCanvas = ({ handleUserClose }) => {
               onClick={handleUserSettingSave}
               disabled={!isUserSettingSave}
             >
-              <i className="bi bi-floppy"></i>
+              {updateUserLoading || resetPasswordLoading ? (
+                <>
+                  &nbsp;
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                </>
+              ) : (
+                <i className="bi bi-floppy"></i>
+              )}
             </button>
             <button
               className="btn btn-primary float-end my-3"
@@ -267,18 +428,18 @@ const UserOffCanvas = ({ handleUserClose }) => {
                   <input
                     className="form-control mt-1"
                     type="text"
-                    placeholder="Full Name"
-                    value={
-                      individualUserData?.first_name +
-                      " " +
-                      individualUserData?.last_name
-                    }
+                    name="full_name"
+                    placeholder="First Name"
+                    value={individualUserData?.full_name}
+                    onChange={handleUserDetails}
                     disabled={navTabDisabled}
                   />
                   <input
                     className="form-control mt-1"
                     type="text"
-                    placeholder="Contact No"
+                    name="contactNo"
+                    placeholder="Contact Number"
+                    onChange={handleUserDetails}
                     value={individualUserData?.contactNo}
                     disabled={navTabDisabled}
                   />
@@ -293,6 +454,8 @@ const UserOffCanvas = ({ handleUserClose }) => {
                     className="form-control mt-1"
                     type="text"
                     placeholder="Address"
+                    name="address"
+                    onChange={handleUserDetails}
                     value={individualUserData?.address}
                     disabled={navTabDisabled}
                   />
@@ -326,14 +489,29 @@ const UserOffCanvas = ({ handleUserClose }) => {
                 >
                   <input
                     className="form-control mt-1"
-                    type="text"
-                    placeholder="New Password"
+                    type="password"
+                    placeholder="Old Password"
+                    name="oldPassword"
+                    value={resetPasswordInfo.oldPassword}
+                    onChange={handleResetPassword}
                     disabled={navTabDisabled}
                   />
                   <input
                     className="form-control mt-1"
-                    type="text"
+                    type="password"
+                    placeholder="New Password"
+                    name="newPassword"
+                    value={resetPasswordInfo.newPassword}
+                    onChange={handleResetPassword}
+                    disabled={navTabDisabled}
+                  />
+                  <input
+                    className="form-control mt-1"
+                    type="password"
+                    name="confirmPassword"
                     placeholder="Confirm Password"
+                    value={resetPasswordInfo.confirmPassword}
+                    onChange={handleResetPassword}
                     disabled={navTabDisabled}
                   />
                 </div>
@@ -361,7 +539,18 @@ const UserOffCanvas = ({ handleUserClose }) => {
                   onClick={handleCustomSettingSave}
                   disabled={!isCustomSettingSave}
                 >
-                  <i className="bi bi-floppy"></i>
+                  {updateCustomSettingLoading ? (
+                    <>
+                      &nbsp;
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                    </>
+                  ) : (
+                    <i className="bi bi-floppy"></i>
+                  )}
                 </button>
                 <button
                   className="btn btn-primary float-end my-2"
@@ -382,9 +571,10 @@ const UserOffCanvas = ({ handleUserClose }) => {
                   </label>
                   <input
                     type="text"
-                    style={{ width: 40 }}
-                    className="float-end"
-                    value={customSettingResult["notificationDays"]}
+                    className="float-end custom_setting_input"
+                    name="notification_days"
+                    value={customSettingResult?.notification_days}
+                    onChange={handleCustomSettingData}
                     disabled={customSettingDataDisabled}
                   />
                   <label htmlFor="carExpense" className="col-form-label">
@@ -392,9 +582,10 @@ const UserOffCanvas = ({ handleUserClose }) => {
                   </label>
                   <input
                     type="text"
-                    style={{ width: 40 }}
-                    className="float-end"
-                    value={customSettingResult["carExpense"]}
+                    name="vehicalCarRate"
+                    className="float-end custom_setting_input"
+                    value={customSettingResult?.vehicalCarRate}
+                    onChange={handleCustomSettingData}
                     disabled={customSettingDataDisabled}
                   />
                   <label htmlFor="carExpense" className="col-form-label">
@@ -402,9 +593,10 @@ const UserOffCanvas = ({ handleUserClose }) => {
                   </label>
                   <input
                     type="text"
-                    style={{ width: 40 }}
-                    className="float-end"
-                    value={customSettingResult["twoWheelerExpense"]}
+                    name="vehicalBikeRate"
+                    className="float-end custom_setting_input"
+                    value={customSettingResult?.vehicalBikeRate}
+                    onChange={handleCustomSettingData}
                     disabled={customSettingDataDisabled}
                   />
                   <label htmlFor="visitSummaryCount" className="col-form-label">
@@ -412,9 +604,10 @@ const UserOffCanvas = ({ handleUserClose }) => {
                   </label>
                   <input
                     type="text"
-                    style={{ width: 40 }}
-                    className="float-end"
-                    value={customSettingResult["visitSummaryCount"]}
+                    className="float-end custom_setting_input"
+                    name="visit_summary_word_count"
+                    value={customSettingResult?.visit_summary_word_count}
+                    onChange={handleCustomSettingData}
                     disabled={customSettingDataDisabled}
                   />
                   <label htmlFor="emailAddress" className="col-form-label">
@@ -422,8 +615,10 @@ const UserOffCanvas = ({ handleUserClose }) => {
                   </label>
                   <textarea
                     className="form-control"
-                    rows={2}
-                    value={customSettingResult["emailAddress"]}
+                    rows={4}
+                    name="email"
+                    value={customSettingResult?.email}
+                    onChange={handleCustomSettingData}
                     disabled={customSettingDataDisabled}
                   />
                 </div>
@@ -458,4 +653,4 @@ const UserOffCanvas = ({ handleUserClose }) => {
     </>
   );
 };
-export default UserOffCanvas;
+export default UserProfile;

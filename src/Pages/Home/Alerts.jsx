@@ -5,9 +5,9 @@ import { toast } from "react-toastify";
 
 import moment from "moment";
 
-import { notification } from "../../Redux/slices/otherSlice";
+import { Notification } from "../../Redux/slices/otherSlice";
 
-const AlertOffCanvas = ({ notificationCount }) => {
+const Alerts = ({ notificationCount }) => {
   const dispatch = useDispatch();
 
   const [showNotification, setShowNotification] = useState({});
@@ -16,7 +16,7 @@ const AlertOffCanvas = ({ notificationCount }) => {
     useSelector((state) => state.other.notificationState);
 
   useEffect(() => {
-    dispatch(notification());
+    dispatch(Notification());
   }, [dispatch]);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const AlertOffCanvas = ({ notificationCount }) => {
                   <div className="ms-2 me-auto">
                     {item.module_name === "Company" &&
                     item.action_name === "Add" ? (
-                      <div className="">{"New Company: " + item.new_value}</div>
+                      <span className="">{"New Company: " + item.new_value}</span>
                     ) : item.module_name === "Quotation" &&
                       item.action_name === "Add" ? (
                       <span>{"New Quotation: " + item.new_value}</span>
@@ -85,4 +85,4 @@ const AlertOffCanvas = ({ notificationCount }) => {
   );
 };
 
-export default AlertOffCanvas;
+export default Alerts;
