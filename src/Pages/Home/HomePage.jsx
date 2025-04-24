@@ -1,43 +1,28 @@
 import { useEffect, useState } from "react";
+import { useNavigate, Outlet } from "react-router-dom";
 
 import UserProfile from "./UserProfile";
 import Alerts from "./Alerts";
-import HomeCarousel from "./HomeCarousel";
-import NewUser from "../User/NewUser";
-import ViewUsers from "../User/ViewUsers";
-import NewCompany from "../Company/NewCompany";
-import ViewCompany from "../Company/ViewCompany";
-import NewProduct from "../Product/NewProduct";
-import ViewProduct from "../Product/ViewProduct";
-import NewQuotation from "../Quotation/NewQuotation";
-import ViewQuotation from "../Quotation/ViewQuotation";
-import ViewVisits from "../Visit/ViewVisits";
-import ViewToDo from "../Todo/ViewTodo";
 
 const HomePage = () => {
-  const subMenuComponents = {
-    Home: HomeCarousel,
-    NewUser: NewUser,
-    ViewUsers: ViewUsers,
-    NewCompany: NewCompany,
-    ViewCompany: ViewCompany,
-    NewProduct: NewProduct,
-    ViewProduct: ViewProduct,
-    NewQuotation: NewQuotation,
-    ViewQuotation: ViewQuotation,
-    ViewVisits: ViewVisits,
-    ViewToDo: ViewToDo,
-  };
+  const navigate = useNavigate();
 
   const [showUserOffcanvas, setShowUserOffcanvas] = useState(false);
   const [showAlertOffcanvas, setShowAlertOffcanvas] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [alertCount, setAlertCount] = useState(0);
-  const [isUserClicked, setIsUserClicked] = useState(false);
   const [selectedSubMenu, setSelectedSubMenu] = useState(null);
 
   const checkIsAdmin = localStorage.getItem("isAdmin");
+
+  useEffect(() => {
+    if (checkIsAdmin === "true") {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [checkIsAdmin]);
 
   const handleUserShow = () => setShowUserOffcanvas(true);
   const handleUserClose = () => setShowUserOffcanvas(false);
@@ -56,16 +41,6 @@ const HomePage = () => {
   const handleSubMenuClick = (component) => {
     setSelectedSubMenu(component);
   };
-
-  const RenderComponent = subMenuComponents[selectedSubMenu];
-
-  useEffect(() => {
-    if (checkIsAdmin === "true") {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
-  }, [checkIsAdmin]);
 
   return (
     <>
@@ -87,7 +62,7 @@ const HomePage = () => {
               </button>
             </li>
             <li className="nav-item mx-4 mt-1 text-white menu-pointer">
-              <span onClick={() => handleSubMenuClick("Home")}> Home </span>
+              <span onClick={() => navigate("/homepage")}> Home </span>
             </li>
             <li className="nav-item mx-4 mt-1 text-white menu-pointer">
               <span
@@ -104,17 +79,17 @@ const HomePage = () => {
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("NewCompany")}
+                    onClick={() => navigate("register_company")}
                   >
-                    New Company
+                    Register Company
                   </a>
                 </li>
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("ViewCompany")}
+                    onClick={() => navigate("company_records")}
                   >
-                    View Companies
+                    Company Records
                   </a>
                 </li>
               </ul>
@@ -125,9 +100,9 @@ const HomePage = () => {
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("NewProduct")}
+                    onClick={() => navigate("register_product")}
                   >
-                    New Product
+                    Register Product
                   </a>
                 </li>
                 <li>
@@ -135,7 +110,7 @@ const HomePage = () => {
                     className="dropdown-item text-white"
                     onClick={() => handleSubMenuClick("ViewProduct")}
                   >
-                    View Products
+                    Product Records
                   </a>
                 </li>
               </ul>
@@ -148,7 +123,7 @@ const HomePage = () => {
                     className="dropdown-item text-white"
                     onClick={() => handleSubMenuClick("NewQuotation")}
                   >
-                    New Quotation
+                    Fresh Quotation
                   </a>
                 </li>
                 <li>
@@ -156,7 +131,7 @@ const HomePage = () => {
                     className="dropdown-item text-white"
                     onClick={() => handleSubMenuClick("ViewQuotation")}
                   >
-                    View Quotations
+                    Quotation Records
                   </a>
                 </li>
               </ul>
@@ -169,7 +144,7 @@ const HomePage = () => {
                     className="dropdown-item text-white"
                     onClick={() => handleSubMenuClick("ViewVisits")}
                   >
-                    View Visits
+                    Visit Records
                   </a>
                 </li>
                 <li>
@@ -194,17 +169,17 @@ const HomePage = () => {
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("NewUser")}
+                    onClick={() => navigate("register_user")}
                   >
-                    New User
+                    Register User
                   </a>
                 </li>
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("ViewUsers")}
+                    onClick={() => navigate("user_records")}
                   >
-                    View Users
+                    User Records
                   </a>
                 </li>
               </ul>
@@ -306,7 +281,9 @@ const HomePage = () => {
         handleClose={handleAlertClose}
         notificationCount={handleNotificationCount}
       />
-      {RenderComponent ? <RenderComponent /> : <HomeCarousel />}
+      <div className="container-fluid">
+        <Outlet />
+      </div>
     </>
   );
 };

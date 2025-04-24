@@ -1,29 +1,11 @@
-// import { isValid } from "react-datepicker/dist/date_utils";
 import { toast } from "react-toastify";
 
 let emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-export const emailValidation = (email) => {
-  let emailRegex =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return email != null && emailRegex.test(String(email).toLowerCase());
-};
+let contactNumberRegex = /^[0-9]+$/;
 
-export const passwordValidation = (password) => {
-  return password != null && password.length >= 6;
-};
-
-export const isSamePassword = (password, confirmPassword) => {
-  return password === confirmPassword;
-};
-
-export const loginFormValidation = (
-  email,
-  password,
-  setEmailError,
-  setPasswordError
-) => {
+export const emailValidation = (email, setEmailError) => {
   let isValid = true;
   if (!email.trim() || !email.match(emailRegex)) {
     isValid = false;
@@ -31,6 +13,11 @@ export const loginFormValidation = (
   } else {
     setEmailError("");
   }
+  return isValid;
+};
+
+export const passwordValidation = (password, setPasswordError) => {
+  let isValid = true;
 
   if (!password.trim() || password.length < 6) {
     isValid = false;
@@ -41,13 +28,19 @@ export const loginFormValidation = (
   return isValid;
 };
 
-export const forgotPasswordEmailValidation = (email, setEmailError) => {
+export const PasswordMatchValidation = (
+  password,
+  confirmPassword,
+  setConfirmPasswordError
+) => {
   let isValid = true;
-  if (!email.trim() || !email.match(emailRegex)) {
+  if (password !== confirmPassword) {
     isValid = false;
-    setEmailError("Please provide valid email.");
+    setConfirmPasswordError(
+      "New Password does not match with Confirm Password."
+    );
   } else {
-    setEmailError("");
+    setConfirmPasswordError("");
   }
   return isValid;
 };
@@ -60,41 +53,6 @@ export const otpValidation = (otp, setOtpError) => {
   } else {
     setOtpError("");
   }
-  return isValid;
-};
-
-export const forgotPasswordValidation = (
-  newPassword,
-  confirmPassword,
-  setNewPasswordError,
-  setConfirmPasswordError
-) => {
-  let isValid = true;
-  if (!newPassword.trim() || newPassword.length < 6) {
-    isValid = false;
-    setNewPasswordError("Password must be at least 6 characters.");
-  } else {
-    setNewPasswordError("");
-  }
-
-  if (!confirmPassword.trim() || confirmPassword.length < 6) {
-    isValid = false;
-    setConfirmPasswordError(
-      "New Password does not match with Confirm Password."
-    );
-  } else {
-    setConfirmPasswordError("");
-  }
-
-  if (newPassword !== confirmPassword) {
-    isValid = false;
-    setConfirmPasswordError(
-      "New Password does not match with Confirm Password."
-    );
-  } else {
-    setConfirmPasswordError("");
-  }
-
   return isValid;
 };
 
@@ -120,67 +78,51 @@ export const resetPasswordValidation = (resetPasswordInfo) => {
   return isValid;
 };
 
-export const registerUserValidations = (
-  userForm,
-  userFormErrors,
-  setUserFormErrors
-) => {
+export const userFormValidation = (modifiedFields) => {
+  const userFormErrors = {};
   let isValid = true;
-  let userErrors = { ...userFormErrors };
-  if (!userForm.first_name.trim()) {
-    isValid = false;
-    userErrors.first_name = "First Name Required";
-  } else {
-    delete userErrors.first_name;
-  }
 
-  if (!userForm.last_name.trim()) {
-    isValid = false;
-    userErrors.last_name = "Last Name Required";
-  } else {
-    delete userErrors.last_name;
-  }
+  const password = modifiedFields.password;
+  const enterPassword = modifiedFields.enterPassword;
 
-  if (!userForm.address.trim()) {
-    isValid = false;
-    userErrors.address = "Address Required";
-  } else {
-    delete userErrors.address;
-  }
+  for (let key in modifiedFields) {
+    const value = modifiedFields[key];
+    if (key === "first_name" && !value.trim()) {
+      userFormErrors[key] = "First Name is required";
+      isValid = false;
+    }
+    if (key === "last_name" && !value.trim()) {
+      userFormErrors[key] = "Last Name is required";
+      isValid = false;
+    }
+    if (
+      key === "contactNo" &&
+      (!value.trim() || value.length !== 10 || !value.match(contactNumberRegex))
+    ) {
+      userFormErrors[key] = "Invalid Contact Number";
+      isValid = false;
+    }
+    if (key === "email" && (!value.trim() || !value.match(emailRegex))) {
+      userFormErrors[key] = "Invalid email";
+      isValid = false;
+    }
+    if (key === "address" && !value.trim()) {
+      userFormErrors[key] = "Address is required";
+      isValid = false;
+    }
 
-  if (!userForm.contactNo.trim() || userForm.contactNo < 10) {
-    isValid = false;
-    userErrors.contactNo = "Invalid Contact Number";
-  } else {
-    delete userErrors.contactNo;
+    if (key === "password" && (!value.trim() || value.length < 6)) {
+      userFormErrors[key] = "Password must be at least 6 characters";
+      isValid = false;
+    }
+    if (key === "enterPassword" && (!value.trim() || value.length < 6)) {
+      userFormErrors[key] = "Password must be at least 6 characters";
+      isValid = false;
+    }
+    if (password && enterPassword && password !== enterPassword) {
+      userFormErrors.password = "Password Mismatch";
+      isValid = false;
+    }
   }
-
-  if (!userForm.email.trim() || !userForm.email.match(emailRegex)) {
-    isValid = false;
-    userErrors.email = "Invalid Email";
-  } else {
-    delete userErrors.email;
-  }
-
-  if (
-    !userForm.enterPassword.trim() ||
-    !userForm.password.trim() ||
-    userForm.enterPassword.length < 6 ||
-    userForm.password.length < 6
-  ) {
-    isValid = false;
-    userErrors.enterPassword = "Password must be at least 6 characters.";
-    userErrors.password = "Password must be at least 6 characters.";
-  } else if (userForm.enterPassword !== userForm.password) {
-    isValid = false;
-    userErrors.enterPassword = "Password mismatch.";
-    userErrors.password = "Password mismatch.";
-  } else {
-    delete userErrors.password;
-    delete userErrors.enterPassword;
-  }
-
-  console.log("User Errors", userErrors);
-  setUserFormErrors((prevErrors) => ({ ...prevErrors, ...userErrors }));
-  return Object.keys(userErrors).length === 0;
+  return { isValid, userFormErrors };
 };

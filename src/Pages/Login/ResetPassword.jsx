@@ -1,16 +1,23 @@
-import "./LoginPage.css";
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import { setForgotPassword } from "../../Redux/slices/loginSlice";
-import { forgotPasswordValidation } from "../../Utilities/validations";
+import {
+  passwordValidation,
+  PasswordMatchValidation,
+} from "../../Utilities/validations";
+import "../../Styles/LoginPage.css";
 
 const ResetPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { setPasswordData, setPasswordLoading, setPasswordError } = useSelector(
+    (state) => state.login.setPasswordState
+  );
+  const { fpValues } = useSelector((state) => state.login.forgotPasswordState);
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,10 +25,6 @@ const ResetPassword = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const {setPasswordData, setPasswordLoading, setPasswordError} =
-    useSelector((state) => state.login.setPasswordState);
-  const {fpValues} = useSelector((state) => state.login.forgotPasswordState);
 
   useEffect(() => {
     if (setPasswordData) {
@@ -31,16 +34,27 @@ const ResetPassword = () => {
   }, [setPasswordData, navigate]);
 
   useEffect(() => {
-    if (setPasswordError) { 
+    if (setPasswordError) {
       toast.error(setPasswordError);
     }
   }, [setPasswordError]);
 
   const handleReset = (e) => {
     e.preventDefault();
-
     // Stop execution if validation fails
-    if (!forgotPasswordValidation(newPassword, confirmPassword, setNewPasswordError, setConfirmPasswordError)) {
+    if (!passwordValidation(newPassword, setNewPasswordError)) {
+      return;
+    }
+    if (!passwordValidation(confirmPassword, setConfirmPasswordError)) {
+      return;
+    }
+    if (
+      !PasswordMatchValidation(
+        newPassword,
+        confirmPassword,
+        setConfirmPasswordError
+      )
+    ) {
       return;
     }
 
@@ -144,7 +158,7 @@ const ResetPassword = () => {
                 >
                   {setPasswordLoading ? (
                     <>
-                      &nbsp; Resetting {" "}
+                      &nbsp; Resetting{" "}
                       <span
                         className="spinner-border spinner-border-sm"
                         role="status"

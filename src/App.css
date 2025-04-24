@@ -1,4 +1,4 @@
- .App {
+.App {
   background-color: rgb(220, 222, 226);
 }
 
@@ -10,7 +10,6 @@
 
 .custom-tabs .nav-link.active {
   border-color: None; /* Border color for active tab */
-  /* color: #28a745; */
   background-color: rgb(220, 222, 226);
 }
 
@@ -26,24 +25,27 @@
   color: mediumblue !important;
 }
 
-.user-img{
+.user-img {
   width: 150px;
   height: 150px;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  /* overflow-x: hidden; */
 }
 
-/*@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-} */
+/* Remove yellow autofill background across the app */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@import "../src/Styles/font.css";

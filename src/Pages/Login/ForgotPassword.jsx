@@ -1,5 +1,3 @@
-import "./LoginPage.css";
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,30 +8,24 @@ import {
   ForgotPasswordData,
   verifyOtp,
 } from "../../Redux/slices/loginSlice";
-
-import {
-  otpValidation,
-  forgotPasswordEmailValidation,
-} from "../../Utilities/validations";
+import { emailValidation, otpValidation } from "../../Utilities/validations";
+import "../../Styles/LoginPage.css";
 
 const ForgotPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { forgotPasswordData, forgotPasswordError, forgotPasswordLoading } =
+    useSelector((state) => state.login.forgotPasswordState);
+  const { verifyOtpData, verifyOtpError, verifyOtpLoading } = useSelector(
+    (state) => state.login.verifyOtpState
+  );
 
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
-
-  const {
-    forgotPasswordData,
-    forgotPasswordError,
-    forgotPasswordLoading,
-  } = useSelector((state) => state.login.forgotPasswordState);
-  const { verifyOtpData, verifyOtpError, verifyOtpLoading } = useSelector(
-    (state) => state.login.verifyOtpState
-  );
 
   useEffect(() => {
     if (forgotPasswordData) {
@@ -62,8 +54,8 @@ const ForgotPassword = () => {
 
   const handleSendOtp = (e) => {
     e.preventDefault();
-    
-    if (!forgotPasswordEmailValidation(email, setEmailError)) {
+
+    if (!emailValidation(email, setEmailError)) {
       return;
     }
     setEmail(email);
@@ -73,7 +65,7 @@ const ForgotPassword = () => {
 
   const handleSubmitOtp = (e) => {
     e.preventDefault();
-    
+
     if (!otpValidation(otp, setOtpError)) {
       return;
     }
@@ -114,6 +106,7 @@ const ForgotPassword = () => {
                   setEmail(e.target.value);
                   setEmailError("");
                 }}
+                autoComplete="off"
               />
               {emailError && (
                 <div className="invalid-feedback">{emailError}</div>
@@ -127,15 +120,17 @@ const ForgotPassword = () => {
                   onClick={handleSendOtp}
                 >
                   {forgotPasswordLoading ? (
-                  <>
-                      &nbsp; Sending {" "}
+                    <>
+                      &nbsp; Sending{" "}
                       <span
                         className="spinner-border spinner-border-sm"
                         role="status"
                         aria-hidden="true"
                       />
-                    </>) : (
-                  "Send OTP" )}
+                    </>
+                  ) : (
+                    "Send OTP"
+                  )}
                 </button>
               </div>
             </div>
@@ -152,6 +147,7 @@ const ForgotPassword = () => {
                   setOtpError("");
                 }}
                 disabled={!isSubmitEnabled}
+                autoComplete="off"
               />
               {otpError && <div className="invalid-feedback">{otpError}</div>}
             </div>
@@ -165,7 +161,7 @@ const ForgotPassword = () => {
                 >
                   {verifyOtpLoading ? (
                     <>
-                      &nbsp; Verifying {" "}
+                      &nbsp; Verifying{" "}
                       <span
                         className="spinner-border spinner-border-sm"
                         role="status"

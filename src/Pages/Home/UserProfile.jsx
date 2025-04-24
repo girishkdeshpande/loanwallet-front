@@ -1,6 +1,3 @@
-import avatar from "D:/loanwallet-front/src/Assets/Images/user_avatar.jpg";
-import { resetPasswordValidation } from "../../Utilities/validations";
-
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -14,8 +11,8 @@ import {
   resetResetPasswordState,
 } from "../../Redux/slices/loginSlice";
 import {
-  singleUser,
-  updateUser,
+  SingleUser,
+  UpdateUser,
   resetUpdateUserState,
 } from "../../Redux/slices/userSlice";
 import {
@@ -24,6 +21,9 @@ import {
   resetCustomSettingState,
   resetNotificationState,
 } from "../../Redux/slices/otherSlice";
+
+import { resetPasswordValidation } from "../../Utilities/validations";
+import avatar from "D:/loanwallet-front/src/Assets/Images/user_avatar.jpg";
 
 const UserProfile = ({ handleUserClose }) => {
   const dispatch = useDispatch();
@@ -76,7 +76,7 @@ const UserProfile = ({ handleUserClose }) => {
 
   useEffect(() => {
     if (userId) {
-      dispatch(singleUser(userId));
+      dispatch(SingleUser(userId));
     }
   }, [dispatch, userId]);
 
@@ -113,7 +113,7 @@ const UserProfile = ({ handleUserClose }) => {
     }
 
     if (logoutError) {
-      toast.error(logoutError, { className: "toast-font" });
+      toast.error(logoutError);
     }
   }, [logoutData, logoutError, navigate, dispatch]);
 
@@ -123,7 +123,7 @@ const UserProfile = ({ handleUserClose }) => {
       setIsCustomSettingEdit(false);
       setCustomSettingDataDisabled(true);
       setIsCustomSettingDisabled(false);
-      toast.success(updateCustomSettingData.data, { className: "toast-font" });
+      toast.success(updateCustomSettingData.data);
     }
 
     if (updateCustomSettingError) {
@@ -131,13 +131,13 @@ const UserProfile = ({ handleUserClose }) => {
       setIsCustomSettingEdit(false);
       setCustomSettingDataDisabled(false);
       setIsCustomSettingDisabled(true);
-      toast.error(updateCustomSettingData.error, { className: "toast-font" });
+      toast.error(updateCustomSettingData.error);
     }
   }, [updateCustomSettingData, updateCustomSettingError]);
 
   useEffect(() => {
     if (isUserDetailsChanged && updateUserData) {
-      toast.success(updateUserData.data, { className: "toast-font" });
+      toast.success(updateUserData.data);
       setIsUserSettingSave(false);
       setIsUserSettingEdit(false);
       setNavTabDisabled(true);
@@ -145,7 +145,7 @@ const UserProfile = ({ handleUserClose }) => {
       setIsUserDetailsChanged(false);
     }
     if (isResetPasswordChanged && resetPasswordData) {
-      toast.success(resetPasswordData.data, { className: "toast-font" });
+      toast.success(resetPasswordData.data);
       setIsUserSettingSave(false);
       setIsUserSettingEdit(false);
       setNavTabDisabled(true);
@@ -156,12 +156,12 @@ const UserProfile = ({ handleUserClose }) => {
         newPassword: "",
         confirmPassword: "",
       });
-      toast.info("Relogin with new password", { className: "toast-font" });
+      toast.info("Relogin with new password");
       navigate("/");
     }
 
     if (updateUserError) {
-      toast.error(updateUserData, { className: "toast-font" });
+      toast.error(updateUserData);
       setIsUserSettingSave(true);
       setIsUserSettingEdit(false);
       setNavTabDisabled(false);
@@ -169,10 +169,9 @@ const UserProfile = ({ handleUserClose }) => {
     }
     if (resetPasswordError) {
       setNavTabDisabled(false);
-      toast.error(resetPasswordError, { className: "toast-font" });
+      toast.error(resetPasswordError);
       setIsUserSettingSave(true);
       setIsUserSettingEdit(false);
-      // setNavTabDisabled(false);
       setIsUserSettingDisabled(false);
     }
   }, [
@@ -219,7 +218,7 @@ const UserProfile = ({ handleUserClose }) => {
         address: individualUserData.address,
       };
 
-      dispatch(updateUser({ updateData: userPayload, id: userPayload.id }));
+      dispatch(UpdateUser({ updateData: userPayload, id: userPayload.id }));
     }
 
     if (isResetPasswordChanged) {
@@ -333,10 +332,6 @@ const UserProfile = ({ handleUserClose }) => {
             <button
               className="btn btn-info mx-2 my-3"
               type="button"
-              // data-bs-toggle="collapse"
-              // data-bs-target="#userCollapse"
-              // aria-expanded="false"
-              // aria-controls="userCollapse"
               onClick={handleUserSetting}
               disabled={isUserSettingDisabled}
             >
@@ -521,13 +516,11 @@ const UserProfile = ({ handleUserClose }) => {
           {individualUserData?.isAdmin ? (
             <>
               <div className="mx-auto">
+                {/* <i className="bi bi-gear me-2"></i>
+                <span className="fs-5">Custom Setting</span> */}
                 <button
                   className="btn btn-info mx-2 my-2"
                   type="button"
-                  // data-bs-toggle="collapse"
-                  // data-bs-target="#customCollapse"
-                  // aria-expanded="false"
-                  // aria-controls="customCollapse"
                   onClick={handleCustomSetting}
                   disabled={isCustomSettingDisabled}
                 >

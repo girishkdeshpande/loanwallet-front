@@ -1,108 +1,193 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from '../api.js'
+import api from "../api.js";
 
-export const addCompany = createAsyncThunk('company/registerCompany', async(company_data) => {
-    const response = await api.post('company/registerCompany', company_data);
-    return response.data;
-})
+export const RegisterCompany = createAsyncThunk(
+  "company/registerCompany",
+  async (company_data, thunkAPI) => {
+    try {
+      const response = await api.post("company/register_company", company_data);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
 
-export const singleCompany = createAsyncThunk('company/getOneCompany/', async(id) => {
-    const response = await api.get(`company/getOneCompany/${id}`);
-    return response.data;
-})
+export const SingleCompany = createAsyncThunk(
+  "company/single_company",
+  async (id, thunkAPI) => {
+    try {
+      const response = await api.get(`company/getOneCompany/${id}`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
 
-export const allCompanies = createAsyncThunk('company/getAllCompany', async() => {
-    const response = await api.get('company/getAllCompany');
-    return response.data;
-})
+export const AllCompanies = createAsyncThunk(
+  "company/all_companies",
+  async (data, thunkAPI) => {
+    try {
+      const response = await api.get("company/getAllCompany", data);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
 
-export const updateCompany = createAsyncThunk('company/updateCompany/', async(id, update_data) => {
-    const response = await api.put(`company/updateCompany/${id}`, update_data);
-    return response.data;
-})
+export const UpdateCompany = createAsyncThunk(
+  "company/update_company",
+  async (id, update_data, thunkAPI) => {
+    try {
+      const response = await api.put(
+        `company/updateCompany/${id}`,
+        update_data
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
 
-export const searchCompany = createAsyncThunk('company/searchCompanyWithName', async(company_name) => {
-    const response = await api.post('company/searchCompanyWithName', company_name);
-    return response.data;
-})
+export const SearchCompany = createAsyncThunk(
+  "company/search_company",
+  async (company_name, thunkAPI) => {
+    try {
+      const response = await api.post(
+        "company/searchCompanyWithName",
+        company_name
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
 
-export const deleteCompany = createAsyncThunk('company/deleteCompany/', async(id) => {
-    const response = await api.delete(`company/deleteCompany/${id}`);
-    return response.data;
-})
-
+export const DeleteCompany = createAsyncThunk(
+  "company/delete_company",
+  async (id, thunkAPI) => {
+    try {
+      const response = await api.delete(`company/deleteCompany/${id}`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
 
 const companySlice = createSlice({
-    name: 'company',
-    initialState: {},
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-        .addCase(addCompany.pending, (state) => {state.loading = true;})
-        .addCase(addCompany.fulfilled, (state,action) => {
-            state.loading = false;
-            state.register = action.payload;
-        })
-        .addCase(addCompany.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message;
-        })
+  name: "company",
+  initialState: {
+    registerCompanyState: {
+      registerCompanyData: null,
+      registerCompanyLoading: false,
+      registerCompanyError: null,
+    },
+    singleCompanyState: {
+      singleCompanyData: null,
+      singleCompanyLaoding: false,
+      singleCompanyError: null,
+    },
+    allCompanyState: {
+      allCompanyData: null,
+      allCompanyLoading: false,
+      allCompanyError: null,
+    },
+    updateCompanyState: {
+      updateCompanyData: null,
+      updateCompanyLoading: false,
+      updateCompanyError: null,
+    },
+    deleteCompanyState: {
+      deleteCompanyData: null,
+      deleteCompanyLoading: false,
+      deleteCompanyError: null,
+    },
+    searchCompanyState: {
+      searchCompanyData: null,
+      searchCompanyLoading: false,
+      searchCompanyError: null,
+    },
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(RegisterCompany.pending, (state) => {
+        state.registerCompanyState.registerCompanyLoading = true;
+      })
+      .addCase(RegisterCompany.fulfilled, (state, action) => {
+        state.registerCompanyState.registerCompanyLoading = false;
+        state.registerCompanyState.registerCompanyData = action.payload;
+      })
+      .addCase(RegisterCompany.rejected, (state, action) => {
+        state.registerCompanyState.registerCompanyLoading = false;
+        state.registerCompanyState.registerCompanyError = action.payload.error;
+      })
 
-        .addCase(singleCompany.pending, (state) => {state.loading = true;})
-        .addCase(singleCompany.fulfilled, (state, action) => {
-            state.loading = false;
-            state.single = action.payload;
-        })
-        .addCase(singleCompany.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message;
-        })
+      .addCase(SingleCompany.pending, (state) => {
+        state.singleCompanyState.singleCompanyLaoding = true;
+      })
+      .addCase(SingleCompany.fulfilled, (state, action) => {
+        state.singleCompanyState.singleCompanyLaoding = false;
+        state.singleCompanyState.singleCompanyData = action.payload;
+      })
+      .addCase(SingleCompany.rejected, (state, action) => {
+        state.singleCompanyState.singleCompanyLaoding = false;
+        state.singleCompanyState.singleCompanyError = action.payload.error;
+      })
 
-        .addCase(allCompanies.pending, (state) => {state.loading = true;})
-        .addCase(allCompanies.fulfilled, (state, action) => {
-            state.loading = false;
-            state.all = action.payload;
-        })
-        .addCase(allCompanies.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message;
-        })
+      .addCase(AllCompanies.pending, (state) => {
+        state.allCompanyState.allCompanyLoading = true;
+      })
+      .addCase(AllCompanies.fulfilled, (state, action) => {
+        state.allCompanyState.allCompanyLoading = false;
+        state.allCompanyState.allCompanyData = action.payload;
+      })
+      .addCase(AllCompanies.rejected, (state, action) => {
+        state.allCompanyState.allCompanyLoading = false;
+        state.allCompanyState.allCompanyError = action.payload.error;
+      })
 
-        .addCase(updateCompany.pending, (state) => {state.loading = true;})
-        .addCase(updateCompany.fulfilled, (state, action) => {
-            state.loading = false;
-            state.update = {...state.update, ...action.payload};
-        })
-        .addCase(updateCompany.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message;
-        })
+      .addCase(UpdateCompany.pending, (state) => {
+        state.updateCompanyState.updateCompanyLoading = true;
+      })
+      .addCase(UpdateCompany.fulfilled, (state, action) => {
+        state.updateCompanyState.updateCompanyLoading = false;
+        state.updateCompanyState.updateCompanyData = action.payload;
+      })
+      .addCase(UpdateCompany.rejected, (state, action) => {
+        state.updateCompanyState.updateCompanyLoading = false;
+        state.updateCompanyState.updateCompanyError = action.payload.error;
+      })
 
-        .addCase(searchCompany.pending, (state) => {state.loading = true;})
-        .addCase(searchCompany.fulfilled, (state, action) => {
-            state.loading = false;
-            state.search = action.payload;
-        })
-        .addCase(searchCompany.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message;
-        })
+      .addCase(SearchCompany.pending, (state) => {
+        state.searchCompanyState.searchCompanyLoading = true;
+      })
+      .addCase(SearchCompany.fulfilled, (state, action) => {
+        state.searchCompanyState.searchCompanyLoading = false;
+        state.searchCompanyState.searchCompanyData = action.payload;
+      })
+      .addCase(SearchCompany.rejected, (state, action) => {
+        state.searchCompanyState.searchCompanyLoading = false;
+        state.searchCompanyState.searchCompanyError = action.payload.error;
+      })
 
-        .addCase(deleteCompany.pending, (state) => {state.loading = true;})
-        .addCase(deleteCompany.fulfilled, (state, action) => {
-            state.loading = false;
-            state.delete = action.payload;
-        })
-        .addCase(deleteCompany.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message;
-        })
-    }
-})
+      .addCase(DeleteCompany.pending, (state) => {
+        state.deleteCompanyState.deleteCompanyLoading = true;
+      })
+      .addCase(DeleteCompany.fulfilled, (state, action) => {
+        state.deleteCompanyState.deleteCompanyLoading = false;
+        state.deleteCompanyState.deleteCompanyData = action.payload;
+      })
+      .addCase(DeleteCompany.rejected, (state, action) => {
+        state.deleteCompanyState.deleteCompanyLoading = false;
+        state.deleteCompanyState.deleteCompanyError = action.payload.error;
+      });
+  },
+});
 
 export default companySlice.reducer;
-
-
-
-
-

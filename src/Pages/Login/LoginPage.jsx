@@ -1,10 +1,9 @@
-import "./LoginPage.css";
-import Logo from "D:/loanwallet-front/src/Assets/Images/v-square_02.png";
-
 import { Outlet } from "react-router-dom";
 
-const LoginPage = () => {
+import Logo from "D:/loanwallet-front/src/Assets/Images/v-square_02.png";
+import "../../Styles/LoginPage.css";
 
+const LoginPage = () => {
   return (
     <section className="p-5 section">
       <div className="container m-5">

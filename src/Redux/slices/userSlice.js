@@ -13,7 +13,6 @@ export const AllUsers = createAsyncThunk("user", async (thunkAPI) => {
 export const RegisterUser = createAsyncThunk(
   "user/signup",
   async (userData, thunkAPI) => {
-    console.log("user payload", userData);
     try {
       const response = await api.post("user/signup", userData);
       return response.data;
@@ -35,7 +34,7 @@ export const SearchUser = createAsyncThunk(
   }
 );
 
-export const singleUser = createAsyncThunk("user/", async (id, thunkAPI) => {
+export const SingleUser = createAsyncThunk("user/", async (id, thunkAPI) => {
   try {
     const response = await api.get(`user/${id}`);
     return response.data;
@@ -44,11 +43,23 @@ export const singleUser = createAsyncThunk("user/", async (id, thunkAPI) => {
   }
 });
 
-export const updateUser = createAsyncThunk(
+export const UpdateUser = createAsyncThunk(
   "user/update/",
-  async ({updateData, id}, thunkAPI) => {
+  async ({ updateData, id }, thunkAPI) => {
     try {
       const response = await api.put(`user/update/${id}`, updateData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
+
+export const DeleteUser = createAsyncThunk(
+  "user/delete",
+  async (id, thunkAPI) => {
+    try {
+      const response = await api.delete(`user/delete/${id}`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
@@ -84,6 +95,11 @@ const userSlice = createSlice({
       updateUserLoading: false,
       updateUserError: null,
     },
+    deleteUserState: {
+      deleteUserData: null,
+      deleteUserLoading: false,
+      deleteUserError: null,
+    },
   },
   reducers: {
     resetUpdateUserState: (state) => {
@@ -91,7 +107,7 @@ const userSlice = createSlice({
         updateUserData: null,
         updateUserLoading: false,
         updateUserError: null,
-      }
+      };
     },
 
     resetRegisterUserState: (state) => {
@@ -99,33 +115,58 @@ const userSlice = createSlice({
         registerUserData: null,
         registerUserLoading: false,
         registerUserError: null,
+      };
+    },
+
+    resetDeleteUserState: (state) => {
+      state.deleteUserState = {
+        deleteUserData: null,
+        deleteUserLoading: false,
+        deleteUserError: null,
+      };
+    },
+
+    updateUserRecordState: (state, action) => {
+      const updateUser = action.payload;
+      if (Array.isArray(state.allUsersState.allUsersData)) {
+        const index = state.allUsersState.allUsersData.findIndex(
+          (user) => user.id === updateUser.id
+        );
+
+        if (index !== -1) {
+          state.allUsersState.allUsersData[index] = {
+            ...state.allUsersState.allUsersData[index],
+            ...updateUser,
+          };
+        }
       }
     },
   },
+
   extraReducers: (builder) => {
     builder
       // Handles update user
-      .addCase(updateUser.pending, (state) => {
+      .addCase(UpdateUser.pending, (state) => {
         state.updateUserState.updateUserLoading = true;
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
+      .addCase(UpdateUser.fulfilled, (state, action) => {
         state.updateUserState.updateUserLoading = false;
         state.updateUserState.updateUserData = action.payload;
       })
-      .addCase(updateUser.rejected, (state, action) => {
+      .addCase(UpdateUser.rejected, (state, action) => {
         state.updateUserState.updateUserLoading = false;
         state.updateUserState.updateUserError = action.payload.error;
       })
 
       // Handles single user
-      .addCase(singleUser.pending, (state) => {
+      .addCase(SingleUser.pending, (state) => {
         state.singleUserState.singleUserLoading = true;
       })
-      .addCase(singleUser.fulfilled, (state, action) => {
+      .addCase(SingleUser.fulfilled, (state, action) => {
         state.singleUserState.singleUserLoading = false;
         state.singleUserState.singleUserData = action.payload;
       })
-      .addCase(singleUser.rejected, (state, action) => {
+      .addCase(SingleUser.rejected, (state, action) => {
         state.singleUserState.singleUserLoading = false;
         state.singleUserState.singleUserError = action.payload.error;
       })
@@ -168,10 +209,25 @@ const userSlice = createSlice({
         state.allUsersState.allUsersLoading = false;
         state.allUsersState.allUsersError = action.payload.error;
       })
+
+      // Handle delete user
+      .addCase(DeleteUser.pending, (state) => {
+        state.deleteUserState.deleteUserLoading = true;
+      })
+      .addCase(DeleteUser.fulfilled, (state, action) => {
+        state.deleteUserState.deleteUserLoading = false;
+        state.deleteUserState.deleteUserData = action.payload;
+      })
+      .addCase(DeleteUser.rejected, (state, action) => {
+        state.deleteUserState.deleteUserLoading = false;
+        state.deleteUserState.deleteUserError = action.payload.error;
+      });
   },
 });
 
 export const { resetLogoutState } = userSlice.actions;
-export const {resetUpdateUserState} = userSlice.actions;
-export const {resetRegisterUserState} = userSlice.actions;
+export const { resetUpdateUserState, updateUserRecordState } =
+  userSlice.actions;
+export const { resetRegisterUserState, resetDeleteUserState } =
+  userSlice.actions;
 export default userSlice.reducer;

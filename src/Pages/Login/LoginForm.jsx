@@ -1,36 +1,36 @@
-import "./LoginPage.css";
-import { loginFormValidation } from "../../Utilities/validations";
-
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { LoginData } from "../../Redux/slices/loginSlice";
+import {
+  emailValidation,
+  passwordValidation,
+} from "../../Utilities/validations";
+import "../../Styles/LoginPage.css";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { loginData, loginError, loginLoading } = useSelector(
+    (state) => state.login.loginState
+  );
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  let [payload, setPayload] = useState({});
-
-  const { loginData, loginError, loginLoading } = useSelector(
-    (state) => state.login.loginState
-  );
 
   useEffect(() => {
     if (loginData) {
-      toast.success("Login Successful", {className: "toast-font"});
+      toast.success("Logged in Successfully");
       navigate("/homepage");
     }
-
     if (loginError) {
-      toast.error(loginError, {className: "toast-font"});
+      toast.error(loginError);
     }
   }, [loginData, loginError, navigate]);
 
@@ -38,14 +38,14 @@ const LoginForm = () => {
     event.preventDefault();
 
     // Stop execution if validation fails
-    if (
-      !loginFormValidation(email, password, setEmailError, setPasswordError)
-    ) {
+    if (!emailValidation(email, setEmailError)) {
+      return;
+    }
+    if (!passwordValidation(password, setPasswordError)) {
       return;
     }
 
-    payload = { email, password };
-    setPayload(payload);
+    let payload = { email, password };
     dispatch(LoginData(payload));
   };
 
@@ -76,6 +76,7 @@ const LoginForm = () => {
                   setEmail(e.target.value);
                   setEmailError("");
                 }}
+                autoComplete="off"
               />
               {emailError && (
                 <div className="invalid-feedback">{emailError}</div>
@@ -136,7 +137,7 @@ const LoginForm = () => {
                 >
                   {loginLoading ? (
                     <>
-                      &nbsp; Logging in {" "}
+                      &nbsp; Logging in{" "}
                       <span
                         className="spinner-border spinner-border-sm"
                         role="status"
