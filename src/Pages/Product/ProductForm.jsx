@@ -1,30 +1,150 @@
+import { useState, useEffect, useRef } from "react";
+
 import avatar from "D:/loanwallet-front/src/Assets/Images/user_avatar.jpg";
-import { sortedProductType } from "../../Utilities/ListConstants";
+import {
+  copperAlloys,
+  meltingMetalsAndAlloys,
+  manufacturingMethod,
+  customerType,
+  sortedProductType,
+} from "../../Utilities/ListConstants";
 
-import { useState } from "react";
-
-const ProductForm = () => {
-  const [selectedMeltingMetals, setSelectedMeltingMetals] = useState({
-    aluminium_alloy: false,
-    copper_alloy: false,
-    steel_alloy: false,
-    zinc_alloy: false,
-    iron_alloy: false,
+const ProductForm = ({ productData = {}, onProductFormChange, isEdit }) => {
+  const [productBasicData, setProductBasicData] = useState({
+    name: "",
+    HSNcode: "",
+    price: "",
+    standard_pack_size_unit: "",
+    std_size: "",
+    product_type: "",
+    bottom_diameter: "",
+    top_diameter: "",
+    water_capacity: "",
+    weight: "",
+    height: "",
+    aluminium_capacity: "",
+    alloy_type: [],
+    copper_type: [],
+    type_of_foundry: [],
+    customer_type: [],
+    summary: "",
+    terms_conditions: "",
+    capex: false,
   });
 
-  const handleMeltingMetalsSelection = (name) => {
-    setSelectedMeltingMetals((prev) => ({
+  const [initialState, setInitialState] = useState({});
+  const [productFormErrors, setProductFormErrors] = useState({});
+  let [hasErrors, setHasErrors] = useState(false);
+  let [isModified, setIsModified] = useState(false);
+  const isInitialized = useRef(false);
+
+  /* Set Initial state & form values depending upon isEdit */
+  useEffect(() => {
+    if (!isInitialized.current) {
+      if (isEdit && productData) {
+        setProductBasicData(productData);
+        setInitialState(productData);
+      } else if (!isEdit) {
+        setInitialState(productBasicData);
+      }
+    }
+    isInitialized.current = true;
+  }, [isEdit, productData, productBasicData]);
+
+  /* Check Errors */
+  useEffect(() => {
+    setHasErrors(Object.values(productFormErrors).some((err) => err?.trim()));
+  }, [productFormErrors]);
+
+  /* Notify Parent about change */
+  useEffect(() => {
+    onProductFormChange(productBasicData, isModified, hasErrors);
+  }, [onProductFormChange, productBasicData, isModified, hasErrors]);
+
+  const handleOnBlur = (event) => {
+    const { name, value, dataset } = event.target;
+    const label = (dataset.label || name.replace(/_/g, " "))
+      .replace(/\*/g, "")
+      .trim();
+
+    let error = "";
+
+    // Simple required field validation (you can expand this per field)
+    if (!value.trim()) {
+      error = `${label.replace(/_/g, " ")} is required.`;
+    }
+
+    setProductFormErrors((prev) => ({
       ...prev,
-      [name]: !prev[name],
+      [name]: error,
     }));
   };
+
+  const handleProductFormChange = (event) => {
+    const { name, value, type, checked, dataset } = event.target;
+
+    let updatedProductData = { ...productBasicData };
+    let updatedErrors = { ...productFormErrors };
+
+    // Clear the error for the current field if it had one
+    if (updatedErrors[name]) {
+      const { [name]: removed, ...rest } = updatedErrors;
+      updatedErrors = rest;
+    }
+
+    // Handle checkbox and radio button changes
+    if (type === "checkbox" && dataset.name) {
+      const group = dataset.name;
+      const prevGroup = productBasicData[group] || [];
+
+      const updatedGroup = checked
+        ? [...prevGroup, name]
+        : prevGroup.filter((item) => item !== name);
+
+      updatedProductData[group] = updatedGroup;
+    } else if (type === "radio") {
+      const updatedValue = name === "capex" ? value === "true" : value;
+      updatedProductData[name] = updatedValue;
+    } else {
+      updatedProductData[name] = value;
+    }
+    setProductBasicData(updatedProductData);
+    setProductFormErrors(updatedErrors);
+
+    // Notify parent component about the change status
+    if (onProductFormChange && initialState) {
+      const modifiedFields = {};
+
+      // Compare & fetch changed fields only
+      Object.keys(initialState).forEach((key) => {
+        const initialVal = initialState[key];
+        const currentVal = updatedProductData[key];
+
+        const isArray = Array.isArray(initialVal) && Array.isArray(currentVal);
+        const isFieldModified = isArray
+          ? initialVal.sort().join(",") !== currentVal.sort().join(",")
+          : currentVal !== initialVal;
+
+        if (isFieldModified) {
+          modifiedFields[key] = currentVal;
+          isModified = true;
+        }
+      });
+
+      setIsModified(isModified);
+    }
+  };
+
+  console.log("Product Basic Data:", productBasicData);
 
   return (
     <>
       <div className="col">
-        <h5 className="my-2">Register Product</h5>
+        <h5 className="my-2">
+          {isEdit ? "Update Product" : "Register Product"}
+        </h5>
 
-        {/* Product Basic Information */}
+        {/* Product Image */}
         <div className="row align-items-start mt-4">
           <div className="col-2">
             <h6>Product Image</h6>
@@ -63,32 +183,46 @@ const ProductForm = () => {
           <div className="col">
             <div className="row g-1">
               {[
-                { label: "Product Name *", name: "product_name" },
-                { label: "HSN Code *", name: "hsn_code", col: 2 },
-                {
-                  label: "Product Group *",
-                  name: "product_group",
-                  type: "select",
-                  options: sortedProductType,
-                },
+                { label: "Product Name *", name: "name" },
+                { label: "HSN Code *", name: "HSNcode", col: 2 },
                 {
                   label: "Standard Pack Size *",
-                  name: "std_pack_size",
+                  name: "std_size",
                   col: 2,
                 },
                 {
                   label: "Unit *",
-                  name: "unit",
+                  name: "standard_pack_size_unit",
                   col: 1,
                   type: "select",
-                  options: ["Box", "Nos", "Kg", "Ltr"],
+                  options: ["Box", "Kg", "Ltr", "Nos"],
                 },
-                { label: "Price *", name: "product_price", col: 1 },
+                { label: "Price *", name: "price", col: 1 },
+                {
+                  label: "Product Group ",
+                  name: "product_type",
+                  type: "select",
+                  options: sortedProductType,
+                },
               ].map(({ label, name, type, options, col = 3 }) => (
                 <div className={`col-${col}`} key={name}>
                   <div className="form-floating">
                     {type === "select" ? (
-                      <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
+                      <select
+                        className={`form-select form-select-sm rounded-4 border border-1 border-dark ${
+                          name === "standard_pack_size_unit" &&
+                          productFormErrors[name]
+                            ? "is-invalid"
+                            : ""
+                        }`}
+                        name={name}
+                        value={productBasicData[name] || ""}
+                        onChange={handleProductFormChange}
+                        onBlur={handleOnBlur}
+                        data-label={
+                          name === "standard_pack_size_unit" ? label : ""
+                        }
+                      >
                         <option value="">-- Select --</option>
                         {options.map((option, index) => (
                           <option key={index} value={option}>
@@ -99,14 +233,54 @@ const ProductForm = () => {
                     ) : (
                       <input
                         type="text"
-                        className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                        className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
+                          productFormErrors[name] ? "is-invalid" : ""
+                        }`}
                         placeholder={label}
+                        name={name}
+                        value={productBasicData[name] || ""}
+                        onChange={handleProductFormChange}
+                        onBlur={handleOnBlur}
+                        data-label={label}
+                        autoComplete="off"
                       />
                     )}
                     <label>{label}</label>
+                    {productFormErrors[name] && (
+                      <small className="invalid-feedback">
+                        {productFormErrors[name] || ""}
+                      </small>
+                    )}
                   </div>
                 </div>
               ))}
+              {productBasicData.product_type === "Crucible" && (
+                <div className="row g-1">
+                  {[
+                    { label: "Top Diameter", name: "top_diameter" },
+                    { label: "Bottom Diameter", name: "bottom_diameter" },
+                    { label: "Height", name: "height" },
+                    { label: "Weight", name: "weight" },
+                    { label: "Water Capacity", name: "water_capacity" },
+                    { label: "Aluminium Capacity", name: "aluminium_capacity" },
+                  ].map(({ label, name }) => (
+                    <div className="col-md-2" key={name}>
+                      <div className="form-floating">
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                          placeholder={label}
+                          name={name}
+                          value={productBasicData[name] || ""}
+                          onChange={handleProductFormChange}
+                          autoComplete="off"
+                        />
+                        <label>{label}</label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -118,68 +292,48 @@ const ProductForm = () => {
           </div>
           <div className="col">
             <div className="row g-1 align-items-center">
-              {[
-                { label: "Aluminium Alloys", name: "aluminium_alloy" },
-                { label: "Copper Alloys", name: "copper_alloy" },
-                { label: "Steel Alloys", name: "steel_alloy" },
-                { label: "Zinc Alloys", name: "zinc_alloy" },
-                { label: "Iron Alloys", name: "iron_alloy" },
-              ].map(({ label, name }) => (
+              {meltingMetalsAndAlloys.map((item) => (
                 <div
                   className="col-md-2 d-flex align-items-center gap-3"
-                  key={name}
+                  key={item}
                 >
                   <input
                     type="checkbox"
                     className="form-check-input border border-1 border-dark"
-                    id={name}
-                    checked={selectedMeltingMetals[name]}
-                    onChange={() => handleMeltingMetalsSelection(name)}
+                    data-name="alloy_type"
+                    id={item}
+                    name={item}
+                    checked={(productBasicData.alloy_type || []).includes(item)}
+                    onChange={handleProductFormChange}
                   />
-                  <label className="form-check-label" htmlFor={name}>
-                    {label}
+                  <label className="form-check-label" htmlFor={item}>
+                    {item}
                   </label>
                 </div>
               ))}
-              {selectedMeltingMetals.copper_alloy && (
+              {(productBasicData.alloy_type || []).includes(
+                "Copper Alloys"
+              ) && (
                 <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
-                  <h7>Select Copper Alloys</h7>
-                  {[
-                    { label: "Brass", name: "brass" },
-                    { label: "Commercial Copper", name: "commercial_copper" },
-                    {
-                      label: "High Conductivity Copper",
-                      name: "high_conductivity_copper",
-                    },
-                    { label: "Bronze & Gun Metal", name: "bronze_gun_metal" },
-                    {
-                      label: "Aluminium Bronze & Mangneze Bronze",
-                      name: "aluminium_mangneze_bronze",
-                    },
-                    {
-                      label: "Nickel Silver Alloys - Casting",
-                      name: "nickel_silver_alloys_casting",
-                    },
-                    {
-                      label: "Nickel Silver Alloys - Hot & Cold Work",
-                      name: "nickel_silver_alloys_h&c_work",
-                    },
-                    {
-                      label: "Nickel Bronze & Nickel Silver Alloys",
-                      name: "nickel_bronze_&_nickel_copper_alloys",
-                    },
-                  ].map(({ label, name }) => (
+                  <h6>Select Copper Alloys</h6>
+                  {copperAlloys.map((item) => (
                     <div
                       className="col-md-4 d-flex align-items-center gap-3"
-                      key={name}
+                      key={item}
                     >
                       <input
                         type="checkbox"
                         className="form-check-input border border-1 border-dark"
-                        id={name}
+                        id={item}
+                        name={item}
+                        data-name="copper_type"
+                        checked={(productBasicData.copper_type || []).includes(
+                          item
+                        )}
+                        onChange={handleProductFormChange}
                       />
-                      <label className="form-check-label" htmlFor={name}>
-                        {label}
+                      <label className="form-check-label" htmlFor={item}>
+                        {item}
                       </label>
                     </div>
                   ))}
@@ -196,32 +350,24 @@ const ProductForm = () => {
           </div>
           <div className="col">
             <div className="row g-1 align-items-center">
-              {[
-                { label: "GDC", name: "gdc" },
-                { label: "LPDC", name: "lpdc" },
-                { label: "HPDC", name: "hpdc" },
-                { label: "Centrifugal", name: "centrifugal" },
-                { label: "Sand Moulding", name: "sand_moulding" },
-                { label: "Shell Moulding", name: "shell_moulding" },
-                { label: "Investment Casting", name: "investment_casting" },
-                { label: "Plaster Casting", name: "plaster_casting" },
-                { label: "Vaccum Casting", name: "vaccum_casting" },
-                { label: "Continuous Casting", name: "continuous_casting" },
-                { label: "Lost Foam", name: "lost_foam" },
-                { label: "Utensil", name: "utensil" },
-                { label: "Alloy Manufacturing", name: "alloy_manufacturing" },
-              ].map(({ label, name }) => (
+              {manufacturingMethod.map((item) => (
                 <div
                   className="col-md-2 d-flex align-items-center gap-3"
-                  key={name}
+                  key={item}
                 >
                   <input
                     type="checkbox"
                     className="form-check-input border border-1 border-dark"
-                    id={name}
+                    id={item}
+                    name={item}
+                    data-name="type_of_foundry"
+                    checked={(productBasicData.type_of_foundry || []).includes(
+                      item
+                    )}
+                    onChange={handleProductFormChange}
                   />
-                  <label className="form-check-label" htmlFor={name}>
-                    {label}
+                  <label className="form-check-label" htmlFor={item}>
+                    {item}
                   </label>
                 </div>
               ))}
@@ -236,37 +382,24 @@ const ProductForm = () => {
           </div>
           <div className="col">
             <div className="row g-1 align-items-center">
-              {[
-                {
-                  label: "Casting Manufacturer",
-                  name: "casting_manufacturer",
-                },
-                { label: "Alloy Manufacturer", name: "alloy_manufacturer" },
-                { label: "Core Manufacturer", name: "core_manufacturer" },
-                {
-                  label: "Furnace Manufacturer",
-                  name: "furnace_manufacturer",
-                },
-                {
-                  label: "Utensil Manufacturer",
-                  name: "utensil_manufacturer",
-                },
-                {
-                  label: "Rolling & Extrusion Factory",
-                  name: "r&e_factory",
-                },
-              ].map(({ label, name }) => (
+              {customerType.map((item) => (
                 <div
                   className="col-md-3 d-flex align-items-center gap-3"
-                  key={name}
+                  key={item}
                 >
                   <input
                     type="checkbox"
                     className="form-check-input border border-1 border-dark"
-                    id={name}
+                    id={item}
+                    name={item}
+                    data-name="customer_type"
+                    checked={(productBasicData.customer_type || []).includes(
+                      item
+                    )}
+                    onChange={handleProductFormChange}
                   />
-                  <label className="form-check-label" htmlFor={name}>
-                    {label}
+                  <label className="form-check-label" htmlFor={item}>
+                    {item}
                   </label>
                 </div>
               ))}
@@ -282,21 +415,23 @@ const ProductForm = () => {
           <div className="col">
             <div className="row g-1 align-items-center">
               {[
-                { label: "Yes", name: "yes", value: "yes" },
-                { label: "No", name: "no", value: "no" },
-              ].map(({ label, name, value }) => (
+                { id: "capex", label: "Yes", value: true },
+                { id: "nonCapex", label: "No", value: false },
+              ].map(({ id, label, value }) => (
                 <div
                   className="col-md-2 d-flex align-items-center gap-3"
-                  key={value}
+                  key={id}
                 >
                   <input
                     type="radio"
                     className="form-check-input border border-1 border-dark"
-                    id={value}
-                    name={name}
+                    id={id}
+                    name="capex"
                     value={value}
+                    checked={productBasicData.capex === value}
+                    onChange={handleProductFormChange}
                   />
-                  <label className="form-check-label" htmlFor={value}>
+                  <label className="form-check-label" htmlFor={label}>
                     {label}
                   </label>
                 </div>
@@ -369,6 +504,10 @@ const ProductForm = () => {
                         style={{ height: 100 }}
                         className="form-control form-control-sm rounded-4 border border-1 border-dark"
                         placeholder={label}
+                        value={productBasicData[name] || ""}
+                        name={name}
+                        onChange={handleProductFormChange}
+                        autoComplete="off"
                       />
                       <label>{label}</label>
                     </div>
@@ -386,7 +525,7 @@ const ProductForm = () => {
           </div>
           <div className="col">
             <div className="row g-3">
-              {[{ label: "Terms & Conditions", name: "t&c" }].map(
+              {[{ label: "Terms & Conditions", name: "terms_conditions" }].map(
                 ({ label, name }) => (
                   <div className="col-md-12" key={name}>
                     <div className="form-floating">
@@ -395,6 +534,10 @@ const ProductForm = () => {
                         style={{ height: 100 }}
                         className="form-control form-control-sm rounded-4 border border-1 border-dark"
                         placeholder={label}
+                        value={productBasicData[name] || ""}
+                        name={name}
+                        onChange={handleProductFormChange}
+                        autoComplete="off"
                       />
                       <label>{label}</label>
                     </div>

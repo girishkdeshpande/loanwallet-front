@@ -1,244 +1,198 @@
-const NewQuotation1 = () => {
-  const SendTo = () => {
-    return (
-      <>
-        <label className="col-12 bg-info border border-1 border-secondary rounded text-center col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
-          Send To
-        </label>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="Select Company1"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="Contact Person Email"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="CC Email"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <input
-          className="form-control my-2"
-          type="text"
-          id="exampleDataList"
-          placeholder="Subject"
-          defaultValue="Quotation for below Products/Unit"
-        />
-      </>
-    );
-  };
+import { type } from "@testing-library/user-event/dist/type";
 
-  const AddProducts = () => {
-    return (
-      <>
-        <label className="col-12 bg-info border border-1 border-secondary rounded text-center col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
-          Add Products
-        </label>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="Select Company1"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <table className="table table-secondary table-bordered mt-1">
-          <tbody>
-            <tr>
-              <td style={{ width: "250px" }}>04-08-2024</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </>
-    );
-  };
-
-  const TermsAndConditions = () => {
-    return (
-      <>
-        <label className="col-12 bg-info border border-1 border-secondary rounded text-center col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
-          Terms & Conditions
-        </label>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="Price"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="Delivery Period"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="Freight"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <input
-          className="form-control mt-2"
-          list="datalistOptions"
-          id="exampleDataList"
-          placeholder="Payment"
-        />
-        <datalist id="datalistOptions">
-          <option value="Swapnil Vyavahare" />
-          <option value="Vaibhav Jadhav" />
-          <option value="Jai Shilwant" />
-          <option value="Vicky" />
-        </datalist>
-        <input
-          className="form-control mt-2"
-          type="text"
-          id="exampleDataList"
-          placeholder="Validity"
-          defaultValue="These are current prices"
-          disabled
-        />
-      </>
-    );
-  };
-
+const NewQuotation = () => {
   return (
-    <div className="container-fluid">
+    <>
+      <div className="col">
+        <h5 className="my-2">Fresh Quotation</h5>
+      </div>
+
       <div className="row">
-        <div className="col-12 mb-2 mx-2">
-          <label className="bg-info border border-1 border-secondary rounded text-center col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100">
-            New Quotation
-          </label>
-        </div>
-
-        <div className="col-2">
-          <div className="container rounded border border-1 border-secondary ms-2">
-            <label
-              className="my-1 rounded col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100"
-              href="#"
-            >
-              Send To
-            </label>
-            <label
-              className="my-1 rounded col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100"
-              href="#"
-            >
-              Add Products
-            </label>
-            <label
-              className="my-1 rounded col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100"
-              href="#"
-            >
-              Terms & Conditions
-            </label>
+        <div className="col-md-6">
+          {/* Send To Information */}
+          <div className="row align-items-start my-4">
+            <div className="col-md-3">
+              <h6>Send To Information</h6>
+            </div>
+            <div className="col">
+              <div className="d-flex flex-column gap-2">
+                {[
+                  {
+                    label: "To Company",
+                    name: "to_company",
+                    type: "select",
+                  },
+                  {
+                    label: "Contact Person",
+                    name: "contact_person",
+                    type: "select",
+                  },
+                  {
+                    label: "CC To Email",
+                    name: "cc_to",
+                    // type: "select",
+                  },
+                  {
+                    label: "Subject",
+                    name: "subject",
+                  },
+                ].map(({ label, name, type }) => (
+                  <div className="row g-2 align-items-center" key={name}>
+                    <div className="col-10 form-floating">
+                      {type === "select" ? (
+                        <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
+                          <option value="">-- Select --</option>
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                          placeholder={label}
+                          defaultValue={
+                            label === "Subject"
+                              ? "Quotation for below Products/Unit"
+                              : ""
+                          }
+                        />
+                      )}
+                      <label>{label}</label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="col-3">
-          <div className="container border border-1 border-secondary h-100 rounded ms-2">
-            <label className="col-12 bg-info border border-1 border-secondary rounded text-center col-form-label col-form-label-sm fw-normal fs-6 px-2 w-100 mt-1">
-              Send To
-            </label>
-            <input
-              className="form-control mt-2"
-              list="datalistOptions"
-              id="exampleDataList"
-              placeholder="Select Company"
-            />
-            <datalist id="datalistOptions">
-              <option value="Company 1" />
-              <option value="Company 2" />
-            </datalist>
-            <input
-              className="form-control mt-2"
-              list="datalistOptions"
-              id="exampleDataList"
-              placeholder="Contact Person Email"
-            />
-            <datalist id="datalistOptions">
-              <option value="Swapnil Vyavahare" />
-              <option value="Vaibhav Jadhav" />
-              <option value="Jai Shilwant" />
-              <option value="Vicky" />
-            </datalist>
-            <input
-              className="form-control mt-2"
-              list="datalistOptions"
-              id="exampleDataList"
-              placeholder="CC Email"
-            />
-            <datalist id="datalistOptions">
-              <option value="Swapnil Vyavahare" />
-              <option value="Vaibhav Jadhav" />
-              <option value="Jai Shilwant" />
-              <option value="Vicky" />
-            </datalist>
-            <input
-              className="form-control my-2"
-              type="text"
-              id="exampleDataList"
-              placeholder="Subject"
-              defaultValue="Quotation for below Products/Unit"
-            />
-            <div className="d-flex justify-content-center">
-              <button className="btn btn-primary my-3 mx-2">Reset</button>
-              <button className="btn btn-primary my-3 mx-2">Preview</button>
+          {/* Select Products */}
+          <div className="row align-items-start my-4">
+            <div className="col-md-3">
+              <h6>Select Products</h6>
+            </div>
+            <div className="col">
+              <div className="d-flex flex-column">
+                {[
+                  {
+                    label: "Product Name *",
+                    name: "product_name",
+                    type: "select",
+                  },
+                ].map(({ label, name, type }) => (
+                  <div className="d-flex align-items-center gap-5" key={name}>
+                    <div className="col-10 form-floating flex-grow-1">
+                      {type === "select" ? (
+                        <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
+                          <option value="">-- Select --</option>
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                          placeholder={label}
+                        />
+                      )}
+                      <label>{label}</label>
+                    </div>
+                    <div className="col-2">
+                      <a href="#" className="d-flex align-items-start">
+                        Add
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Terms & Conditions */}
+          <div className="row align-items-start my-4">
+            <div className="col-md-3">
+              <h6>Terms & Conditions</h6>
+            </div>
+            <div className="col-md">
+              <div className="d-flex flex-column gap-2">
+                {[
+                  {
+                    label: "Price",
+                    name: "t&c_price",
+                    type: "select",
+                    options: ["Ex. Works Pune Godown", "Other"],
+                  },
+                  {
+                    label: "Delivery Period",
+                    name: "delivery_period",
+                    type: "select",
+                    options: ["7-8 days after PO confirmation", "Lead Time"],
+                  },
+                  {
+                    label: "Freight",
+                    name: "freight",
+                    type: "select",
+                    options: ["Amount", "Buyer Side/To Pay Basis", "Nil"],
+                  },
+                  {
+                    label: "Payment",
+                    name: "payment",
+                    type: "select",
+                    options: [
+                      "Advance Payment",
+                      "Against Delivery",
+                      "Against Proforma Invoice",
+                      "Credit",
+                    ],
+                  },
+                ].map(({ label, name, type, options }) => (
+                  <div className="d-flex align-items-center gap-1" key={name}>
+                    <div className="col-10 form-floating flex-grow-1">
+                      {type === "select" ? (
+                        <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
+                          <option value="">-- Select --</option>
+                          {options.map((option, index) => (
+                            <option key={index} value={option}>
+                              {option}
+                            </option>
+                          ))}{" "}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                          placeholder={label}
+                        />
+                      )}
+                      <label>{label}</label>
+                    </div>
+                    {["freight", "payment"].includes(name) ? (
+                      <div className="col-2 form-floating">
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                          placeholder="Condition"
+                          disabled
+                        />
+                        <label>{name === "freight" ? "Rupees" : "Days"}</label>
+                      </div>
+                    ) : (
+                      <div className="col-2"></div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-        
-        <div className="col-7">
-          <div className="container border border-1 border-secondary h-100 rounded ms-2"></div>
+
+        {/* Right Section (Blank for Now) */}
+        <div className="col-md-6">
+          <div className="row align-items-start my-4">
+            <div className="col-md-3">
+              <h6>Right Section</h6>
+            </div>
+            <div className="col">Right Section Content</div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default NewQuotation1;
+export default NewQuotation;

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { AllUsers } from "../../Redux/slices/userSlice";
 
-// import { CamelCase } from "../../Utilities/GlobalFunctions";
+import { CamelCase } from "../../Utilities/GlobalFunctions";
 import {
   sortedDesignation,
   degassingMachine,
@@ -14,24 +14,97 @@ import {
   foundryType,
   meltingMetalsAndAlloys,
   manufacturingMethod,
-  copperAlloysType,
+  copperAlloys,
   consumableProductsType,
 } from "../../Utilities/ListConstants";
 
-const CompanyForm = () => {
+const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
   const dispatch = useDispatch();
 
   const { allUsersData } = useSelector((state) => state.user.allUsersState);
 
   const [userFullName, setUserFullName] = useState([]);
   const [showContactPersonRow, setShowContactPersonRow] = useState(false);
+  const [newContactPerson, setNewContactPerson] = useState({
+    first_name: "",
+    last_name: "",
+    designation: "",
+    email: "",
+    contact_number: "",
+  });
+  const [contactPersonErrors, setContactPersonErrors] = useState({});
   const [selectedFurnaceType, setSelectedFurnaceType] = useState({});
   const [selectedMeltingMetals, setSelectedMeltingMetals] = useState({
-    aluminium_alloy: false,
-    copper_alloy: false,
-    steel_alloy: false,
-    zinc_alloy: false,
-    iron_alloy: false,
+    aluminium_alloys: false,
+    copper_alloys: false,
+    steel_alloys: false,
+    zinc_alloys: false,
+    iron_alloys: false,
+  });
+
+  const [companyBasicData, setCompanyBasicData] = useState({
+    name: "",
+    address: "",
+    gst_in: "",
+    latitude: "",
+    longitude: "",
+    no_of_furnace: "",
+    tonnage: "",
+    customer_representative: "",
+    density: "",
+    rpt: "",
+    other_info: "",
+    type_of_foundry: [],
+    alloy_type: [],
+    copper_type: [],
+    manufacturing_method: [],
+    contact_person: [],
+    furnace_type: {
+      Crucible: false,
+      "Other Furnace": false,
+      crucibleDetails: [
+        {
+          crucible_size: "",
+          crucible_size_quantity: "",
+          crucible_stand: "",
+          crucible_stand_quantity: "",
+          furnace_function: "",
+          furnace_charge_media: "",
+        },
+      ],
+      otherFurnaceDetails: [
+        {
+          furnace_type: "",
+          melting_capacity: "",
+          furnace_function: "",
+          charge_media: "",
+        },
+      ],
+    },
+    transfer_ladle: [
+      {
+        lining_material: "",
+        capacity: "",
+        quantity: "",
+      },
+    ],
+    flux_injector_machine: [
+      {
+        make: "",
+        quantity: "",
+        remark: "",
+      },
+    ],
+    capex_details: [
+      {
+        degassing_machine: "",
+        make: "",
+        quantity: "",
+        consumable_product: "",
+        product: "",
+        remark: "",
+      },
+    ],
   });
 
   useEffect(() => {
@@ -44,14 +117,68 @@ const CompanyForm = () => {
         .filter((user) => user.status === true)
         .map((user) => `${user.first_name} ${user.last_name}`);
 
-      //   const camelCaseNames = activeUsers.map((user) => CamelCase(user));
+      const camelCaseNames = activeUsers.map((user) => CamelCase(user));
 
-      setUserFullName(activeUsers);
+      setUserFullName(camelCaseNames);
     }
   }, [allUsersData]);
 
   const handleContactPersonAdd = () => {
+    const newPerson = Object.fromEntries(
+      Object.entries(newContactPerson).map(([k, v]) => [k, v.trim()])
+    );
+
+    const errors = {};
+    if (!newPerson.first_name) errors.first_name = "First name is required.";
+    if (!newPerson.last_name) errors.last_name = "Last name is required.";
+    if (!newPerson.email) errors.email = "Email is required.";
+
+    if (Object.keys(errors).length > 0) {
+      setContactPersonErrors(errors);
+      return;
+    }
+
+    // setContactPersonErrors({});
+
+    // const hasData = Object.values(newPerson).some((val) => val !== "");
+    // if (!hasData) return; // Don't add if all fields are blank
+
+    setCompanyBasicData((prev) => ({
+      ...prev,
+      contact_person: [...prev.contact_person, newPerson],
+    }));
+
     setShowContactPersonRow(true);
+    setNewContactPerson({
+      first_name: "",
+      last_name: "",
+      designation: "",
+      email: "",
+      contact_number: "",
+    });
+  };
+
+  const updateNewContactField = (field, value) => {
+    setNewContactPerson((prev) => ({ ...prev, [field]: value }));
+    setContactPersonErrors((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
+  };
+
+  const updateField = (path, value) => {
+    setCompanyBasicData((prev) => {
+      const newData = { ...prev };
+      const keys = path.split(".");
+      let target = newData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!(keys[i] in target)) target[keys[i]] = {};
+        target = target[keys[i]];
+      }
+      target[keys[keys.length - 1]] = value;
+      console.log("Updated Company Data:", newData);
+      return newData;
+    });
   };
 
   const handleFurnaceTypeSelection = (e, name) => {
@@ -81,8 +208,8 @@ const CompanyForm = () => {
           <div className="col">
             <div className="row g-1">
               {[
-                { label: "Company Name *", name: "company_name" },
-                { label: "Company Address *", name: "company_address" },
+                { label: "Company Name *", name: "name" },
+                { label: "Company Address *", name: "address" },
               ].map(({ label, name }) => (
                 <div className="col-md-6" key={name}>
                   <div className="form-floating">
@@ -90,20 +217,23 @@ const CompanyForm = () => {
                       type="text"
                       className="form-control form-control-sm rounded-4 border border-1 border-dark"
                       placeholder={label}
+                      name={name}
+                      value={companyBasicData[name]}
+                      onChange={(e) => updateField(name, e.target.value)}
                     />
                     <label>{label}</label>
                   </div>
                 </div>
               ))}
               {[
-                { label: "GST Number", name: "gst_number" },
+                { label: "GST Number", name: "gst_in" },
                 { label: "Latitude *", name: "latitude" },
                 { label: "Longitude *", name: "longitude" },
                 { label: "Number of Furnace", name: "number_of_furnace" },
-                { label: "Monthly Tonnage", name: "monthly_tonnage" },
+                { label: "Monthly Tonnage", name: "tonnage" },
                 {
                   label: "Client Executive",
-                  name: "client_executive",
+                  name: "customer_representative",
                   type: "select",
                   options: userFullName.sort(),
                 },
@@ -111,7 +241,12 @@ const CompanyForm = () => {
                 <div className="col-md-2" key={name}>
                   <div className="form-floating">
                     {type === "select" ? (
-                      <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
+                      <select
+                        className="form-select form-select-sm rounded-4 border border-1 border-dark"
+                        name={name}
+                        value={companyBasicData[name]}
+                        onChange={(e) => updateField(name, e.target.value)}
+                      >
                         <option value="">-- Select --</option>
                         {options.map((option, index) => (
                           <option key={index} value={option}>
@@ -124,6 +259,9 @@ const CompanyForm = () => {
                         type="text"
                         className="form-control form-control-sm rounded-4 border border-1 border-dark"
                         placeholder={label}
+                        name={name}
+                        value={companyBasicData[name]}
+                        onChange={(e) => updateField(name, e.target.value)}
                       />
                     )}
                     <label>{label}</label>
@@ -143,7 +281,7 @@ const CompanyForm = () => {
             <div className="row g-1">
               {[
                 { label: "First Name *", name: "first_name" },
-                { label: "Last Name *", name: "Last_name" },
+                { label: "Last Name *", name: "last_name" },
                 {
                   label: "Designation",
                   name: "designation",
@@ -156,7 +294,13 @@ const CompanyForm = () => {
                 <div className={`col-${col}`} key={name}>
                   <div className="form-floating">
                     {type === "select" ? (
-                      <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
+                      <select
+                        className="form-select form-select-sm rounded-4 border border-1 border-dark"
+                        value={newContactPerson[name]}
+                        onChange={(e) =>
+                          updateNewContactField(name, e.target.value)
+                        }
+                      >
                         <option value="">-- Select --</option>
                         {options.map((option, index) => (
                           <option key={index} value={option}>
@@ -167,11 +311,22 @@ const CompanyForm = () => {
                     ) : (
                       <input
                         type="text"
-                        className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                        className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
+                          contactPersonErrors[name] ? "is-invalid" : ""
+                        }`}
+                        value={newContactPerson[name]}
+                        onChange={(e) =>
+                          updateNewContactField(name, e.target.value)
+                        }
                         placeholder={label}
                       />
                     )}
                     <label>{label}</label>
+                    {contactPersonErrors[name] && (
+                      <small className="invalid-feedback">
+                        {contactPersonErrors[name] || ""}
+                      </small>
+                    )}
                   </div>
                 </div>
               ))}
@@ -179,28 +334,59 @@ const CompanyForm = () => {
                 <a
                   href="#"
                   className="d-flex align-items-center"
-                  onClick={handleContactPersonAdd}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleContactPersonAdd();
+                  }}
                 >
                   Add
                 </a>
               </div>
-              {showContactPersonRow && (
-                <div className="row g-1">
-                  <table className="table table-striped ms-1">
-                    <thead></thead>
-                    <tbody>
-                      <td>
-                        <input type="radio"></input>
-                      </td>
-                      <td>First Name</td>
-                      <td>Last Name</td>
-                      <td>Designation</td>
-                      <td>Email</td>
-                      <td>Contact Number</td>
-                    </tbody>
-                  </table>
-                </div>
-              )}
+              {showContactPersonRow &&
+                companyBasicData.contact_person.length > 0 && (
+                  <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
+                    <h6>Contact Person Details</h6>
+                    <table className="table table-striped">
+                      <thead className="table-dark">
+                        <tr>
+                          <th className="text-start">
+                            <i className="bi bi-record-circle"></i>
+                          </th>
+                          <th className="text-start">First Name</th>
+                          <th className="text-start">Last Name</th>
+                          <th className="text-start">Designation</th>
+                          <th className="text-start">Email</th>
+                          <th className="text-start">Contact Number</th>
+                          <th className="text-start">
+                            <i className="bi bi-trash"></i>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {companyBasicData.contact_person.map(
+                          (person, index) => (
+                            <tr key={index}>
+                              <td>
+                                <input
+                                  type="radio"
+                                  name="selectContact"
+                                ></input>
+                              </td>
+                              <td>{person.first_name}</td>
+                              <td>{person.last_name}</td>
+                              <td>{person.designation}</td>
+                              <td>{person.email}</td>
+                              <td>{person.contact_number}</td>
+                              <td>
+                                <i className="bi bi-trash"></i>
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -231,10 +417,10 @@ const CompanyForm = () => {
               ))}
               {selectedFurnaceType["Crucible"] && (
                 <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
-                  <h7>
+                  <h6>
                     Crucible Furnace Information
                     <a className="float-end">Add</a>
-                  </h7>
+                  </h6>
                   {[
                     {
                       label: "Crucible Size",
@@ -291,9 +477,9 @@ const CompanyForm = () => {
               )}
               {selectedFurnaceType["Other Furnace"] && (
                 <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
-                  <h7>
+                  <h6>
                     Other Furnace Information<a className="float-end">Add</a>
-                  </h7>
+                  </h6>
                   {[
                     {
                       label: "Furnace Type",
@@ -396,10 +582,10 @@ const CompanyForm = () => {
                   </label>
                 </div>
               ))}
-              {selectedMeltingMetals["Copper Alloys"] && (
+              {selectedMeltingMetals.copper_alloys && (
                 <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
-                  <h7>Select Copper Alloys</h7>
-                  {copperAlloysType.map((item) => (
+                  <h6>Select Copper Alloys</h6>
+                  {copperAlloys.map((item) => (
                     <div
                       className="col-md-4 d-flex align-items-center gap-3"
                       key={item}

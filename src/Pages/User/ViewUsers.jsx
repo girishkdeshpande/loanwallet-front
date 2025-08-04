@@ -13,11 +13,14 @@ import { showWarningMessage } from "../../Redux/slices/globalMessageSlice";
 import "../../Styles/User.css";
 import "../../Styles/GlobalMessage.css";
 
-import { confirmAction } from "../../Components/WarningMessage";
 import ViewSingleUser from "./ViewSingleUser";
+import { userColumns } from "../../Utilities/TableColumns";
+import { confirmAction } from "../../Components/WarningMessage";
 import Search from "../../Components/Search";
 import Pagination from "../../Components/Pagination";
 import Table from "../../Components/Table";
+import NoRecordsFound from "../../Components/NoRecordsFound";
+import NoRecords from "../../Components/NoRecords";
 
 const ViewUsers = () => {
   const dispatch = useDispatch();
@@ -32,10 +35,9 @@ const ViewUsers = () => {
   const [allUserData, setAllUserData] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchString, setSearchString] = useState("");
-  const [isSearchDisabled, setIsSearchDisabled] = useState(false);
-  const [isSelectDisabled, setIsSelectDisabled] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
+  const [isRequestRaised, setIsRequestRaised] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [modalUserData, setModalUserData] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -59,33 +61,6 @@ const ViewUsers = () => {
     { label: "Inactive", value: "Inactive" },
   ];
 
-  const userColumns = [
-    {
-      key: "first_name",
-      label: "User Name",
-      width: "20%",
-      render: (user) =>
-        user.first_name && user.last_name
-          ? user.first_name + " " + user.last_name
-          : user.first_name || user.last_name,
-    },
-    { key: "email", label: "Email", width: "33%" },
-    { key: "contactNo", label: "Contact Number", width: "15%" },
-    { key: "total_visits", label: "Total Visits", width: "10%" },
-    {
-      key: "admin",
-      label: "User Category",
-      width: "12%",
-      render: (user) => (user.isAdmin ? "Admin" : "Non-Admin"),
-    },
-    {
-      key: "status",
-      label: "Status",
-      width: "7%",
-      render: (user) => (user.status ? "Active" : "Inactive"),
-    },
-  ];
-
   /* Calling backend API */
   useEffect(() => {
     dispatch(AllUsers());
@@ -103,33 +78,41 @@ const ViewUsers = () => {
   }, [allUsersData, allUsersError]);
 
   /* Enable/Disable Select or Search component */
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const clickedOutsideSearch =
-        searchRef.current && !searchRef.current.contains(event.target);
-      const clickedOutsideSelect =
-        selectRef.current && !selectRef.current.contains(event.target);
+  //   useEffect(() => {
+  //     const handleClickOutside = (event) => {
+  //       const clickedOutsideSearch =
+  //         searchRef.current && !searchRef.current.contains(event.target);
+  //       const clickedOutsideSelect =
+  //         selectRef.current && !selectRef.current.contains(event.target);
 
-      if (clickedOutsideSearch && clickedOutsideSelect) {
-        setIsSearchDisabled(false);
-        setIsSelectDisabled(false);
-      }
-    };
+  //       if (clickedOutsideSearch && clickedOutsideSelect) {
+  //         setIsSearchDisabled(false);
+  //         setIsSelectDisabled(false);
+  //       }
+  //     };
 
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  //     document.addEventListener("click", handleClickOutside);
+  //     return () => document.removeEventListener("click", handleClickOutside);
+  //   }, []);
 
   /* Handle focus of Search component */
   const handleSearchFocus = () => {
-    setIsSelectDisabled(true);
-    setSelectedOption("");
+    const hasValue = searchString.trim() !== "";
+    if (!hasValue) {
+      setSelectedOption("");
+      setFilteredUsers([]);
+      setIsRequestRaised(false);
+    }
   };
 
   /* Handle focus of Select component */
   const handleSelectFocus = () => {
-    setIsSearchDisabled(true);
-    setSearchString("");
+    const hasValue = selectedOption.trim() !== "";
+    if (!hasValue) {
+      setSearchString("");
+      setFilteredUsers([]);
+      setIsRequestRaised(false);
+    }
   };
 
   /* Handle change in Search component */
@@ -137,6 +120,7 @@ const ViewUsers = () => {
     setSearchString(value);
     if (value.trim() === "") {
       setFilteredUsers([]);
+      setIsRequestRaised(false);
     }
   };
 
@@ -147,6 +131,7 @@ const ViewUsers = () => {
       setCurrentPage(1);
       return;
     } else {
+      setIsRequestRaised(true);
       const filtered = allUserData.filter((user) =>
         `${user.first_name} ${user.last_name}`
           .toLowerCase()
@@ -156,9 +141,15 @@ const ViewUsers = () => {
         setFilteredUsers(filtered);
         setCurrentPage(1);
       } else {
-        toast.error("Record not found");
-        return;
+        setFilteredUsers([]);
       }
+    }
+  };
+
+  /* Handle Enter Key Press in Search event */
+  const handleSearchKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearchClick(searchString); // This is your existing function to trigger the API
     }
   };
 
@@ -166,6 +157,7 @@ const ViewUsers = () => {
   const handleSelectedOption = (event) => {
     const selected = event.target.value;
     setSelectedOption(selected);
+    setIsRequestRaised(true);
     let filtered;
 
     switch (selected) {
@@ -191,6 +183,7 @@ const ViewUsers = () => {
 
       case "":
         filtered = "";
+        setIsRequestRaised(false);
         break;
 
       default:
@@ -277,7 +270,8 @@ const ViewUsers = () => {
           onChange={handleSearchChange}
           onSearch={handleSearchClick}
           onFocus={handleSearchFocus}
-          disabled={isSearchDisabled}
+          onKeyDown={handleSearchKeyDown}
+          label="Search User By Name"
         />
 
         {/* Dropdown List */}
@@ -288,7 +282,6 @@ const ViewUsers = () => {
               id="floatingSelect"
               ref={selectRef}
               onFocus={handleSelectFocus}
-              disabled={isSelectDisabled}
               value={selectedOption}
               onChange={handleSelectedOption}
             >
@@ -301,13 +294,17 @@ const ViewUsers = () => {
                 </option>
               ))}
             </select>
-            <label htmlFor="floatingSelect">Select from List</label>
+            <label htmlFor="floatingSelect">Search By Categoty</label>
           </div>
         </div>
       </div>
 
       {/* Show records in table*/}
-      {filteredUsers.length > 0 && (
+      {!isRequestRaised ? (
+        <NoRecords />
+      ) : filteredUsers.length === 0 ? (
+        <NoRecordsFound />
+      ) : (
         <>
           <Table
             columns={userColumns}

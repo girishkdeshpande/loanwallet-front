@@ -39,25 +39,34 @@ export const foundryType = [
 export const meltingMetalsAndAlloys = [
   "Aluminium Alloys",
   "Copper Alloys",
+  "Iron Alloys",
   "Steel Alloys",
   "Zinc Alloys",
-  "Iron Alloys",
 ];
 
 export const manufacturingMethod = [
-  "GDC",
-  "LPDC",
-  "HPDC",
+  "Alloy Manufacturing",
   "Centrifugal",
+  "GDC",
+  "HPDC",
   "Lost Foam",
+  "LPDC",
   "Utensil",
   "Sand Moulding",
   "Shell Moulding",
+  "Continuous Casting",
   "Investment Casting",
   "Plaster Casting",
   "Vaccum Casting",
-  "Continuous Casting",
-  "Alloy Manufacturing",
+];
+
+export const customerType = [
+  "Alloy Manufacturer",
+  "Casting Manufacturer",
+  "Core Manufacturer",
+  "Furnace Manufacturer",
+  "Rolling & Extrusion Factory",
+  "Utensil Manufacturer",
 ];
 
 const furnaceChargeMedia = [
@@ -72,7 +81,7 @@ export const sortedFurnaceChargeMedia = [...furnaceChargeMedia].sort((a, b) =>
   a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
 );
 
-export const copperAlloysType = [
+export const copperAlloys = [
   "Brass",
   "Commercial Copper",
   "High Conductivity Copper",
@@ -124,3 +133,12 @@ const productType = [
 export const sortedProductType = [...productType].sort((a, b) =>
   a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
 );
+
+export const EmailTemplateType = [
+  "Company Introduction",
+  "Initial Payment Reminder",
+  "Second Payment Reminder",
+  "Third Payment Reminder",
+  "Holiday Information",
+  "Weekly Foundry Consumable Schedule - V Square Foundry Products",
+];

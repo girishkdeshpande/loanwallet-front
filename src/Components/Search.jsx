@@ -1,10 +1,10 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 
 const Search = forwardRef(
-  ({ value, onChange, onSearch, onFocus, disabled }, ref) => {
+  ({ value, onChange, onSearch, onFocus, onKeyDown, label }, ref) => {
     const handleSearchClick = () => {
       if (!value.trim()) {
-        onSearch([]); // empty search string
+        onSearch(""); // empty search string
         return;
       }
 
@@ -26,10 +26,11 @@ const Search = forwardRef(
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 onFocus={onFocus}
-                disabled={disabled}
+                onKeyDown={onKeyDown}
+                // disabled={disabled}
                 autoComplete="off"
               />
-              <label htmlFor="floatingSearch">Search...</label>
+              <label htmlFor="floatingSearch">{label}</label>
               <button
                 className="btn position-absolute end-0 top-50 translate-middle-y px-3 mt-1 rounded-end-4 text-primary"
                 type="button"
@@ -40,7 +41,7 @@ const Search = forwardRef(
                 }}
                 onClick={handleSearchClick}
                 onFocus={onFocus}
-                disabled={disabled}
+                // disabled={disabled}
               >
                 <i className="bi bi-search"></i>
               </button>

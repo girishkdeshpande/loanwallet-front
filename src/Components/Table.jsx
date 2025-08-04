@@ -4,7 +4,7 @@ const Table = ({ columns, data, extraProps = {} }) => {
   return (
     <>
       <div className="table-wrapper mt-4">
-        <table className="table table-striped">
+        <table className="table table-striped table-bordered">
           <thead className="table-dark">
             <tr>
               <th className="text-center">
@@ -32,7 +32,7 @@ const Table = ({ columns, data, extraProps = {} }) => {
                 <td className="text-center">
                   <input
                     type="radio"
-                    name="selectedUser"
+                    name="selectedRadio"
                     value={row.id}
                     checked={extraProps.selectedRow === row.id}
                     onClick={() => extraProps.handleRadioSelection(row.id)}

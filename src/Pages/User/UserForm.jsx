@@ -45,7 +45,6 @@ const UserForm = ({
       ...userFormData,
       [name]: updatedValue,
     };
-    console.log("Updated Form Data", updatedFormData);
     setUserFormData(updatedFormData);
     setUserFormErrors((prev) => ({ ...prev, [name]: "" }));
 
@@ -63,7 +62,6 @@ const UserForm = ({
         }
       });
 
-      console.log("Modified Fields", modifiedFields);
       const isModified = Object.keys(modifiedFields).length > 0;
 
       onFormChange(updatedFormData, isModified, modifiedFields);

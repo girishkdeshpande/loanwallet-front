@@ -108,7 +108,7 @@ const HomePage = () => {
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("ViewProduct")}
+                    onClick={() => navigate("product_records")}
                   >
                     Product Records
                   </a>
@@ -121,7 +121,7 @@ const HomePage = () => {
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("NewQuotation")}
+                    onClick={() => navigate("fresh_quotation")}
                   >
                     Fresh Quotation
                   </a>
@@ -129,7 +129,7 @@ const HomePage = () => {
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("ViewQuotation")}
+                    onClick={() => navigate("quotation_records")}
                   >
                     Quotation Records
                   </a>
@@ -142,7 +142,7 @@ const HomePage = () => {
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("ViewVisits")}
+                    onClick={() => navigate("visit_records")}
                   >
                     Visit Records
                   </a>
@@ -191,13 +191,7 @@ const HomePage = () => {
                   : "nav-item mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span
-                className={selectedHeader === "Expense" ? "text-color" : ""}
-                onClick={() => handleSelectedHeader("Expense")}
-              >
-                {" "}
-                Expense{" "}
-              </span>
+              <span onClick={() => navigate("expense_records")}>Expense</span>
             </li>
             <li
               className={
@@ -206,13 +200,7 @@ const HomePage = () => {
                   : "nav-item mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span
-                className={selectedHeader === "Email" ? "text-color" : ""}
-                onClick={() => handleSelectedHeader("Email")}
-              >
-                {" "}
-                Email{" "}
-              </span>
+              <span onClick={() => navigate("email_template")}> Email </span>
             </li>
             <li
               className={
@@ -221,8 +209,8 @@ const HomePage = () => {
                   : "nav-item dropdown mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span>To-Dos</span>
-              <ul className="dropdown-menu bg-secondary">
+              <span onClick={() => navigate("to_dos")}>To-Dos</span>
+              {/* <ul className="dropdown-menu bg-secondary">
                 <li>
                   <a
                     className="dropdown-item text-white"
@@ -239,7 +227,7 @@ const HomePage = () => {
                     View ToDos
                   </a>
                 </li>
-              </ul>
+              </ul> */}
             </li>
             <li
               className={
@@ -248,13 +236,7 @@ const HomePage = () => {
                   : "nav-item mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span
-                className={selectedHeader === "Sales" ? "text-color" : ""}
-                onClick={() => handleSelectedHeader("Sales")}
-              >
-                {" "}
-                Sales{" "}
-              </span>
+              <span onClick={() => navigate("sales_records")}>Sales</span>
             </li>
             <li className="nav-item mx-4">
               <button

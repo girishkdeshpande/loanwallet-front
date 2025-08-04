@@ -3,8 +3,10 @@ import { configureStore } from "@reduxjs/toolkit";
 import loginReducer from "./slices/loginSlice.js";
 import userReducer from "./slices/userSlice.js";
 import companyReducer from "./slices/companySlice.js";
+import productReducer from "./slices/productSlice.js";
 import otherReducer from "./slices/otherSlice.js";
 import globalMessageReducer from "./slices/globalMessageSlice.js";
+import todoReducer from "./slices/todoSlices.js";
 // import all_list_typeReducer from "./slices/allListTypeSlice.js";
 
 const store = configureStore({
@@ -12,6 +14,8 @@ const store = configureStore({
     login: loginReducer,
     user: userReducer,
     company: companyReducer,
+    product: productReducer,
+    todo: todoReducer,
     other: otherReducer,
     // all_list_type: all_list_typeReducer,
     globalMessage: globalMessageReducer,

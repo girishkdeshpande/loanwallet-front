@@ -1,21 +1,19 @@
-import react, { useState } from "react";
-
 import Table from "../../Components/Table";
 
-const ViewTransactions = () => {
-  const salesColumns = [
-    { key: "invoice_date", label: "Invoice Date", width: "12%" },
-    { key: "invoice_number", label: "Invoice Number", width: "12%" },
-    { key: "transaction_type", label: "Transaction Type", width: "11%" },
-    { key: "company", label: "Company", width: "44%" },
-    { key: "amount", label: "Amount", width: "11%" },
+const ViewQuotations = () => {
+  const quotationColumns = [
+    { key: "date", label: "Date", width: "10%" },
+    { key: "user_name", label: "Quotation Prepared By", width: "25%" },
+    { key: "company_name", label: "Prepared for Company", width: "45%" },
+    { key: "total_price", label: "Quotation Price", width: "10%" },
+    { key: "open_close_status", label: "Status", width: "10%" },
   ];
 
   return (
     <>
       <div className="row align-items-center">
         <div className="col text-start mt-2">
-          <h5> Sales Records </h5>
+          <h5> Quotation Records </h5>
         </div>
 
         {/* <Search
@@ -29,7 +27,7 @@ const ViewTransactions = () => {
         {/* {filteredCompanies.length > 0 && ( */}
         <>
           <Table
-            columns={salesColumns}
+            columns={quotationColumns}
             //   data={paginatedCompanies}
             //   extraProps={{
             //     selectedRow,
@@ -56,4 +54,4 @@ const ViewTransactions = () => {
   );
 };
 
-export default ViewTransactions;
+export default ViewQuotations;

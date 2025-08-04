@@ -46,7 +46,7 @@ const NewUser = () => {
       toast.error(registerUserError);
     }
     dispatch(resetRegisterUserState());
-  }, [registerUserData, registerUserError, dispatch, navigate]);
+  }, [registerUserData, registerUserError, dispatch]);
 
   /* Handle form changes received from UserForm component */
   const handleRegisterFormChange = (updatedFormData, areFieldsModified) => {

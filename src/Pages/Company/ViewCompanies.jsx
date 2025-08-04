@@ -7,6 +7,7 @@ import { AllCompanies } from "../../Redux/slices/companySlice";
 import Search from "../../Components/Search";
 import Table from "../../Components/Table";
 import Pagination from "../../Components/Pagination";
+import { companyColumns } from "../../Utilities/TableColumns";
 
 const ViewCompanies = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const ViewCompanies = () => {
   const isBackendPaginated = true;
 
   // Pagination Logic
-  const recordsPerPage = 15;
+  const recordsPerPage = 10;
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const paginatedCompanies = filteredCompanies.slice(
@@ -31,18 +32,11 @@ const ViewCompanies = () => {
     indexOfLastRecord
   );
 
-  const companyColumns = [
-    { key: "name", label: "Company Name", width: "25%" },
-    { key: "address", label: "Company Address", width: "45%" },
-    { key: "gst_in", label: "GST Number", width: "15%" },
-    { key: "tonnage", label: "Monthly Tonnage", width: "15%" },
-  ];
-
-  useEffect(() => {
-    let request_parameter =
-      "?no_records=" + recordsPerPage + "&page_no=" + currentPage;
-    dispatch(AllCompanies(request_parameter));
-  }, [dispatch, recordsPerPage, currentPage]);
+  //   useEffect(() => {
+  //     let request_parameter =
+  //       "?no_records=" + recordsPerPage + "&page_no=" + currentPage;
+  //     dispatch(AllCompanies(request_parameter));
+  //   }, [dispatch, recordsPerPage, currentPage]);
 
   useEffect(() => {
     if (allCompanyData) {
