@@ -8,6 +8,7 @@ import ViewUsers from "../Pages/User/ViewUsers";
 import EditUser from "../Pages/User/EditUser";
 import NewCompany from "../Pages/Company/NewCompany";
 import ViewCompanies from "../Pages/Company/ViewCompanies";
+import EditCompany from "../Pages/Company/EditCompany";
 import NewProduct from "../Pages/Product/NewProduct";
 import ViewProducts from "../Pages/Product/ViewProducts";
 import EditProduct from "../Pages/Product/EditProduct";
@@ -37,6 +38,11 @@ const HomeRoutes = () => [
       path="company_records"
       element={<ViewCompanies />}
       key="company_records"
+    />
+    <Route
+      path="update_company"
+      element={<EditCompany />}
+      key="update_company"
     />
 
     <Route

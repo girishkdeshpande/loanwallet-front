@@ -1,45 +1,65 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { AllUsers } from "../../Redux/slices/userSlice";
+import {
+  AllProducts,
+  ConsumableProducts,
+} from "../../Redux/slices/productSlice";
 
 import { CamelCase } from "../../Utilities/GlobalFunctions";
+import CompanyTable from "./CompanyTable";
 import {
-  sortedDesignation,
-  degassingMachine,
   furnaceType,
-  furnaceFunction,
-  sortedFurnaceChargeMedia,
-  sortedOtherFurnaceType,
   foundryType,
   meltingMetalsAndAlloys,
   manufacturingMethod,
   copperAlloys,
-  consumableProductsType,
 } from "../../Utilities/ListConstants";
+import {
+  companyNameAddressFields,
+  companyOtherFields,
+  contactPersonFields,
+  crucibleFurnaceFields,
+  otherFurnaceFields,
+  transferLaddleFields,
+  fluxInjectorFields,
+  densityRptFields,
+  capexDetailsFields,
+  companyRegisteringFields,
+  mandatoryFieldsMap,
+} from "./CompanyFormFields";
+import {
+  contactPersonColumns,
+  crucibleFurnaceColumns,
+  otherFurnaceColumns,
+  transferLaddleColumns,
+  capexDetailsColumns,
+} from "../../Utilities/TableColumns";
 
 const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
   const dispatch = useDispatch();
+  const nameRef = useRef(null);
 
   const { allUsersData } = useSelector((state) => state.user.allUsersState);
 
   const [userFullName, setUserFullName] = useState([]);
-  const [showContactPersonRow, setShowContactPersonRow] = useState(false);
-  const [newContactPerson, setNewContactPerson] = useState({
-    first_name: "",
-    last_name: "",
-    designation: "",
-    email: "",
-    contact_number: "",
-  });
-  const [contactPersonErrors, setContactPersonErrors] = useState({});
+  const [initialState, setInitialState] = useState({});
+  const [companyFormErrors, setCompanyFormErrors] = useState([]);
+  const [crucibleSizeList, setCrucibleSizeList] = useState([]);
+  const [crucibleStandList, setCrucibleStandList] = useState([]);
+  const [roterList, setRoterList] = useState([]);
+  const [shaftList, setShaftList] = useState([]);
+  const [bottlePlateList, setBottlePlateList] = useState([]);
   const [selectedFurnaceType, setSelectedFurnaceType] = useState({});
-  const [selectedMeltingMetals, setSelectedMeltingMetals] = useState({
-    aluminium_alloys: false,
-    copper_alloys: false,
-    steel_alloys: false,
-    zinc_alloys: false,
-    iron_alloys: false,
+  const [areMandatoryFieldsFilled, setAreMandatoryFieldsFilled] =
+    useState(false);
+  const [isAnyFieldModified, setIsAnyFieldModified] = useState(false);
+  const [selectedConsumableProduct, setSelectedConsumableProduct] =
+    useState("");
+  const [selectedRow, setSelectedRow] = useState({
+    groupKey: null,
+    index: null,
   });
 
   const [companyBasicData, setCompanyBasicData] = useState({
@@ -59,56 +79,123 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
     copper_type: [],
     manufacturing_method: [],
     contact_person: [],
-    furnace_type: {
-      Crucible: false,
-      "Other Furnace": false,
-      crucibleDetails: [
-        {
-          crucible_size: "",
-          crucible_size_quantity: "",
-          crucible_stand: "",
-          crucible_stand_quantity: "",
-          furnace_function: "",
-          furnace_charge_media: "",
-        },
-      ],
-      otherFurnaceDetails: [
-        {
-          furnace_type: "",
-          melting_capacity: "",
-          furnace_function: "",
-          charge_media: "",
-        },
-      ],
-    },
-    transfer_ladle: [
-      {
-        lining_material: "",
-        capacity: "",
-        quantity: "",
-      },
-    ],
-    flux_injector_machine: [
-      {
-        make: "",
-        quantity: "",
-        remark: "",
-      },
-    ],
-    capex_details: [
-      {
-        degassing_machine: "",
-        make: "",
-        quantity: "",
-        consumable_product: "",
-        product: "",
-        remark: "",
-      },
-    ],
+    furnace_details: [],
+    transfer_ladle: [],
+    flux_injector_machine: { make: "", quantity: "", remark: "" },
+    capex_details: [],
   });
+
+  const newObjectsTemplate = {
+    new_contact_person: {
+      first_name: "",
+      last_name: "",
+      designation: "",
+      email: "",
+      contactno: "",
+    },
+    new_crucible_furnace: {
+      type: "Crucible",
+      crucible_size: "",
+      crucible_size_quantity: "",
+      crucible_stand: "",
+      crucible_stand_quantity: "",
+      function_of_furnace: "",
+      charge_media: "",
+    },
+    new_other_furnace: {
+      type: "",
+      melting_capacity: "",
+      function_of_furnace: "",
+      charge_media: "",
+    },
+    new_transfer_laddle: {
+      lining_material: "",
+      capacity: "",
+      quantity: "",
+    },
+    new_capex_details: {
+      degassing_machine: "",
+      make: "",
+      quantity: "",
+      consumable_product: "",
+      product: "",
+      remark: "",
+    },
+  };
+
+  const [initialNewObjects, setInitialNewObjects] =
+    useState(newObjectsTemplate);
+
+  function normalizeCompanyData(data, initialData) {
+    const keyMapping = {
+      contactpersons_set: "contact_person",
+      furnacedetail_set: "furnace_details",
+      trans_ladle: "transfer_ladle",
+      flux_injector_machine: "flux_injector_machine",
+      capexdetails_set: "capex_details",
+    };
+
+    const normalized = { ...initialData };
+
+    Object.entries(data).forEach(([key, value]) => {
+      const mappedKey = keyMapping[key] || key; // use mapped key if found, else keep same
+
+      // special case: flux_injector_machine (backend sends list, we need single object)
+      if (mappedKey === "flux_injector_machine" && Array.isArray(value)) {
+        normalized[mappedKey] =
+          value.length > 0 ? value[0] : initialData.flux_injector_machine;
+      } else {
+        normalized[mappedKey] = value;
+      }
+    });
+
+    return normalized;
+  }
+
+  useEffect(() => {
+    if (isEdit && companyData) {
+      const normalizedData = normalizeCompanyData(
+        companyData,
+        companyBasicData
+      );
+
+      if (normalizedData?.furnace_details?.length > 0) {
+        const hasCrucible = normalizedData.furnace_details.some(
+          (r) => r.type === "Crucible" || "CRUCIBLE"
+        );
+        const hasOther = normalizedData.furnace_details.some(
+          (r) => r.type !== "Crucible" || "CRUCIBLE"
+        );
+
+        setSelectedFurnaceType({
+          ...selectedFurnaceType,
+          Crucible: hasCrucible,
+          "Other Furnace": hasOther,
+        });
+      }
+
+      setCompanyBasicData(normalizedData);
+      setInitialState(normalizedData);
+    } else if (!isEdit) {
+      setInitialState(companyBasicData);
+    }
+  }, [isEdit]);
 
   useEffect(() => {
     dispatch(AllUsers());
+    dispatch(ConsumableProducts())
+      .unwrap()
+      .then((data) => {
+        setRoterList(data.roter || []);
+        setShaftList(data.shaft || []);
+        setBottlePlateList(data.bottle_Plate || []);
+      });
+    dispatch(AllProducts(["Crucible", "Crucible Stand"]))
+      .unwrap()
+      .then((data) => {
+        setCrucibleSizeList(data["Crucible"] || []);
+        setCrucibleStandList(data["Crucible Stand"] || []);
+      });
   }, [dispatch]);
 
   useEffect(() => {
@@ -120,66 +207,27 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
       const camelCaseNames = activeUsers.map((user) => CamelCase(user));
 
       setUserFullName(camelCaseNames);
+      nameRef.current?.focus();
     }
   }, [allUsersData]);
 
-  const handleContactPersonAdd = () => {
-    const newPerson = Object.fromEntries(
-      Object.entries(newContactPerson).map(([k, v]) => [k, v.trim()])
+  useEffect(() => {
+    const allFilled = companyRegisteringFields.every(
+      (field) => companyBasicData[field]?.trim() !== ""
     );
+    setAreMandatoryFieldsFilled(allFilled);
 
-    const errors = {};
-    if (!newPerson.first_name) errors.first_name = "First name is required.";
-    if (!newPerson.last_name) errors.last_name = "Last name is required.";
-    if (!newPerson.email) errors.email = "Email is required.";
-
-    if (Object.keys(errors).length > 0) {
-      setContactPersonErrors(errors);
-      return;
-    }
-
-    // setContactPersonErrors({});
-
-    // const hasData = Object.values(newPerson).some((val) => val !== "");
-    // if (!hasData) return; // Don't add if all fields are blank
-
-    setCompanyBasicData((prev) => ({
-      ...prev,
-      contact_person: [...prev.contact_person, newPerson],
-    }));
-
-    setShowContactPersonRow(true);
-    setNewContactPerson({
-      first_name: "",
-      last_name: "",
-      designation: "",
-      email: "",
-      contact_number: "",
-    });
-  };
-
-  const updateNewContactField = (field, value) => {
-    setNewContactPerson((prev) => ({ ...prev, [field]: value }));
-    setContactPersonErrors((prev) => ({
-      ...prev,
-      [field]: "",
-    }));
-  };
-
-  const updateField = (path, value) => {
-    setCompanyBasicData((prev) => {
-      const newData = { ...prev };
-      const keys = path.split(".");
-      let target = newData;
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!(keys[i] in target)) target[keys[i]] = {};
-        target = target[keys[i]];
-      }
-      target[keys[keys.length - 1]] = value;
-      console.log("Updated Company Data:", newData);
-      return newData;
-    });
-  };
+    onCompanyFormChange(
+      companyBasicData,
+      areMandatoryFieldsFilled,
+      isAnyFieldModified
+    );
+  }, [
+    onCompanyFormChange,
+    companyBasicData,
+    areMandatoryFieldsFilled,
+    isAnyFieldModified,
+  ]);
 
   const handleFurnaceTypeSelection = (e, name) => {
     setSelectedFurnaceType((prev) => ({
@@ -188,17 +236,216 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
     }));
   };
 
-  const handleMeltingMetalsSelection = (name) => {
-    setSelectedMeltingMetals((prev) => ({
+  const handleCompanyDataChange = (e, group) => {
+    const { name, value, checked, type } = e.target;
+
+    // ✅ Clear error for the field being updated
+    setCompanyFormErrors((prevErrors) => {
+      if (prevErrors?.[group]?.[name]) {
+        return {
+          ...prevErrors,
+          [group]: {
+            ...prevErrors[group],
+            [name]: "", // remove error text
+          },
+        };
+      }
+      return prevErrors; // no change if no error
+    });
+
+    if (type === "checkbox" && Array.isArray(companyBasicData[group])) {
+      setCompanyBasicData((prev) => {
+        const updated = checked
+          ? [...prev[group], name]
+          : prev[group].filter((item) => item !== name);
+
+        if (group === "alloy_type" && name === "Copper Alloys" && !checked) {
+          setIsAnyFieldModified(true);
+          return {
+            ...prev,
+            [group]: updated,
+            copper_type: [], // reset dependent group
+          };
+        }
+        // setIsAnyFieldModified(true);
+        return {
+          ...prev,
+          [group]: updated,
+        };
+      });
+      setIsAnyFieldModified(true);
+      return; // Exit early, no need to run rest of code
+    }
+
+    if (group === "new_capex_details" && name === "consumable_product") {
+      setSelectedConsumableProduct(value);
+      setInitialNewObjects((prev) => ({
+        ...prev,
+        new_capex_details: {
+          ...prev.new_capex_details,
+          product: "",
+        },
+      }));
+      setIsAnyFieldModified(true);
+      return;
+    }
+
+    if (group.startsWith("new_")) {
+      setInitialNewObjects((prev) => ({
+        ...prev,
+        [group]: {
+          ...prev[group],
+          [name]: value,
+        },
+      }));
+      setIsAnyFieldModified(true);
+    } else if (
+      group in companyBasicData &&
+      typeof companyBasicData[group] === "object" &&
+      !Array.isArray(companyBasicData[group])
+    ) {
+      setCompanyBasicData((prev) => ({
+        ...prev,
+        [group]: {
+          ...prev[group],
+          [name]: value,
+        },
+      }));
+      setIsAnyFieldModified(true);
+    } else {
+      setCompanyBasicData((prev) => {
+        const updated = {
+          ...prev,
+          [name]: value,
+        };
+        return updated;
+      });
+      setIsAnyFieldModified(true);
+    }
+  };
+
+  const handleAddRow = (section, subSection) => {
+    const groupData = initialNewObjects[subSection] || {};
+    const mandatoryFields = mandatoryFieldsMap[subSection] || [];
+
+    // Find missing mandatory fields
+    const missingFields = mandatoryFields.filter(
+      (field) => !groupData[field] || String(groupData[field]).trim() === ""
+    );
+
+    if (missingFields.length > 0) {
+      // Show errors for missing fields
+      setCompanyFormErrors((prev) => ({
+        ...prev,
+        [subSection]: {
+          ...(prev[subSection] || {}),
+          ...Object.fromEntries(
+            missingFields.map((field) => [field, "Required"])
+          ),
+        },
+      }));
+      return; // Stop execution if any mandatory field is missing
+    }
+
+    // ✅ Clear errors for this subSection if validation passes
+    setCompanyFormErrors((prev) => ({
       ...prev,
-      [name]: !prev[name],
+      [subSection]: {},
+    }));
+
+    setCompanyBasicData((prev) => ({
+      ...prev,
+      [section]: [...(prev[section] || []), initialNewObjects[subSection]],
+    }));
+
+    setIsAnyFieldModified(true);
+    // Reset the separate `new_` object in initialNewObjects
+    setInitialNewObjects((prev) => ({
+      ...prev,
+      [subSection]: newObjectsTemplate[subSection],
     }));
   };
 
+  const getCapexOptions = (name, options) => {
+    if (name === "product") {
+      const key = selectedConsumableProduct || "";
+      if (key === "Rotar") return roterList || [];
+      if (key === "Shaft") return shaftList || [];
+      if (key === "Bottle Plate") return bottlePlateList || [];
+      return [];
+    }
+    return Array.isArray(options) ? options : [];
+  };
+
+  const getFilteredData = (data = [], filterType) => {
+    return data
+      .map((row, index) => ({ ...row, _originalIndex: index }))
+      .filter((row) => {
+        if (!filterType) return true; // no filtering
+
+        const type = row.type?.toLowerCase();
+
+        if (filterType === "Crucible") return type === "crucible";
+        if (filterType === "Other") return type !== "crucible";
+        return true;
+      });
+  };
+
+  const handleSelectRow = (groupKey, index) => {
+    setSelectedRow({ groupKey, index });
+  };
+
+  const handleDeleteRow = (groupKey, index) => {
+    setIsAnyFieldModified(true);
+    setCompanyBasicData((prev) => {
+      const updatedGroup = [...prev[groupKey]];
+
+      if (updatedGroup[index]?.id) {
+        // Existing record → mark for deletion
+        updatedGroup[index] = {
+          ...updatedGroup[index],
+          delete: true,
+        };
+      } else {
+        // Newly added row → remove from array
+        updatedGroup.splice(index, 1);
+      }
+
+      return {
+        ...prev,
+        [groupKey]: updatedGroup,
+      };
+    });
+
+    // Clear selection if the deleted row is the selected one
+    setSelectedRow((prev) =>
+      prev.groupKey === groupKey && prev.index === index
+        ? { groupKey: null, index: null }
+        : prev
+    );
+  };
+  //   console.log("Company Data", companyBasicData);
+
   return (
     <>
-      <div className="col">
-        <h5 className="my-2">Register Company</h5>
+      {/* <div className="col">
+        <h5 className="my-2">
+          {isEdit ? "Update Company" : "Register Company"}
+        </h5> */}
+      <div className="row align-items-center my-2">
+        <div className="col-md-2">
+          <h5>{isEdit ? "Update Company" : "Register Company"}</h5>
+        </div>
+        {!isEdit && (
+          <div className="col-md-8">
+            {/* <div className="col-md-8"> */}
+            <small className="text-danger">
+              Note: Mandatory fields to register a company are - Name, Address,
+              Latitude & Longitude.
+            </small>
+            {/* </div> */}
+          </div>
+        )}
 
         {/* Company Basic Information */}
         <div className="row align-items-start mt-4">
@@ -207,10 +454,7 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
           </div>
           <div className="col">
             <div className="row g-1">
-              {[
-                { label: "Company Name *", name: "name" },
-                { label: "Company Address *", name: "address" },
-              ].map(({ label, name }) => (
+              {companyNameAddressFields.map(({ label, name }) => (
                 <div className="col-md-6" key={name}>
                   <div className="form-floating">
                     <input
@@ -219,180 +463,146 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                       placeholder={label}
                       name={name}
                       value={companyBasicData[name]}
-                      onChange={(e) => updateField(name, e.target.value)}
+                      ref={name === "name" ? nameRef : null}
+                      onChange={(e) =>
+                        handleCompanyDataChange(e, "flat_fields")
+                      }
                     />
                     <label>{label}</label>
                   </div>
                 </div>
               ))}
-              {[
-                { label: "GST Number", name: "gst_in" },
-                { label: "Latitude *", name: "latitude" },
-                { label: "Longitude *", name: "longitude" },
-                { label: "Number of Furnace", name: "number_of_furnace" },
-                { label: "Monthly Tonnage", name: "tonnage" },
-                {
-                  label: "Client Executive",
-                  name: "customer_representative",
-                  type: "select",
-                  options: userFullName.sort(),
-                },
-              ].map(({ label, name, type, options }) => (
-                <div className="col-md-2" key={name}>
-                  <div className="form-floating">
-                    {type === "select" ? (
-                      <select
-                        className="form-select form-select-sm rounded-4 border border-1 border-dark"
-                        name={name}
-                        value={companyBasicData[name]}
-                        onChange={(e) => updateField(name, e.target.value)}
-                      >
-                        <option value="">-- Select --</option>
-                        {options.map((option, index) => (
-                          <option key={index} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        className="form-control form-control-sm rounded-4 border border-1 border-dark"
-                        placeholder={label}
-                        name={name}
-                        value={companyBasicData[name]}
-                        onChange={(e) => updateField(name, e.target.value)}
-                      />
-                    )}
-                    <label>{label}</label>
+
+              {companyOtherFields.map(
+                ({ label, name, type, options = userFullName.sort() }) => (
+                  <div className="col-md-2" key={name}>
+                    <div className="form-floating">
+                      {type === "select" ? (
+                        <select
+                          className="form-select form-select-sm rounded-4 border border-1 border-dark"
+                          name={name}
+                          value={companyBasicData[name]}
+                          onChange={(e) =>
+                            handleCompanyDataChange(e, "flat_fields")
+                          }
+                        >
+                          <option value="">-- Select --</option>
+                          {options.map((option, index) => (
+                            <option key={index} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                          placeholder={label}
+                          name={name}
+                          value={companyBasicData[name]}
+                          onChange={(e) =>
+                            handleCompanyDataChange(e, "flat_fields")
+                          }
+                        />
+                      )}
+                      <label>{label}</label>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         </div>
 
         {/* Contact Person Information */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Contact Person</h6>
           </div>
           <div className="col">
             <div className="row g-1">
-              {[
-                { label: "First Name *", name: "first_name" },
-                { label: "Last Name *", name: "last_name" },
-                {
-                  label: "Designation",
-                  name: "designation",
-                  type: "select",
-                  options: sortedDesignation,
-                },
-                { label: "Email *", name: "email", col: 3 },
-                { label: "Contact Number", name: "contact_number" },
-              ].map(({ label, name, type, options, col = 2 }) => (
-                <div className={`col-${col}`} key={name}>
-                  <div className="form-floating">
-                    {type === "select" ? (
-                      <select
-                        className="form-select form-select-sm rounded-4 border border-1 border-dark"
-                        value={newContactPerson[name]}
-                        onChange={(e) =>
-                          updateNewContactField(name, e.target.value)
-                        }
-                      >
-                        <option value="">-- Select --</option>
-                        {options.map((option, index) => (
-                          <option key={index} value={option}>
-                            {option}
-                          </option>
-                        ))}{" "}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
-                          contactPersonErrors[name] ? "is-invalid" : ""
-                        }`}
-                        value={newContactPerson[name]}
-                        onChange={(e) =>
-                          updateNewContactField(name, e.target.value)
-                        }
-                        placeholder={label}
-                      />
-                    )}
-                    <label>{label}</label>
-                    {contactPersonErrors[name] && (
-                      <small className="invalid-feedback">
-                        {contactPersonErrors[name] || ""}
-                      </small>
-                    )}
+              {contactPersonFields.map(
+                ({ label, name, type, options, col = 2 }) => (
+                  <div className={`col-${col}`} key={name}>
+                    <div className="form-floating">
+                      {type === "select" ? (
+                        <select
+                          className="form-select form-select-sm rounded-4 border border-1 border-dark"
+                          name={name}
+                          value={initialNewObjects.new_contact_person[name]}
+                          onChange={(e) =>
+                            handleCompanyDataChange(e, "new_contact_person")
+                          }
+                        >
+                          <option value="">-- Select --</option>
+                          {options.map((option, index) => (
+                            <option key={index} value={option}>
+                              {option}
+                            </option>
+                          ))}{" "}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
+                            companyFormErrors?.new_contact_person?.[name]
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          name={name}
+                          value={initialNewObjects.new_contact_person[name]}
+                          onChange={(e) =>
+                            handleCompanyDataChange(e, "new_contact_person")
+                          }
+                          placeholder={label}
+                        />
+                      )}
+                      <label>{label}</label>
+                      {companyFormErrors?.new_contact_person?.[name] && (
+                        <small className="invalid-feedback">
+                          {companyFormErrors?.new_contact_person?.[name] || ""}
+                        </small>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
               <div className="col-md-auto ms-auto">
                 <a
                   href="#"
                   className="d-flex align-items-center"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleContactPersonAdd();
+                    handleAddRow("contact_person", "new_contact_person");
                   }}
                 >
                   Add
                 </a>
               </div>
-              {showContactPersonRow &&
-                companyBasicData.contact_person.length > 0 && (
-                  <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
-                    <h6>Contact Person Details</h6>
-                    <table className="table table-striped">
-                      <thead className="table-dark">
-                        <tr>
-                          <th className="text-start">
-                            <i className="bi bi-record-circle"></i>
-                          </th>
-                          <th className="text-start">First Name</th>
-                          <th className="text-start">Last Name</th>
-                          <th className="text-start">Designation</th>
-                          <th className="text-start">Email</th>
-                          <th className="text-start">Contact Number</th>
-                          <th className="text-start">
-                            <i className="bi bi-trash"></i>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {companyBasicData.contact_person.map(
-                          (person, index) => (
-                            <tr key={index}>
-                              <td>
-                                <input
-                                  type="radio"
-                                  name="selectContact"
-                                ></input>
-                              </td>
-                              <td>{person.first_name}</td>
-                              <td>{person.last_name}</td>
-                              <td>{person.designation}</td>
-                              <td>{person.email}</td>
-                              <td>{person.contact_number}</td>
-                              <td>
-                                <i className="bi bi-trash"></i>
-                              </td>
-                            </tr>
-                          )
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+              {companyBasicData?.contact_person?.length > 0 && (
+                <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
+                  <h6>Contact Person Details</h6>
+                  <CompanyTable
+                    columns={contactPersonColumns}
+                    data={getFilteredData(companyBasicData?.contact_person)}
+                    selectedId={
+                      selectedRow.groupKey === "contact_person"
+                        ? selectedRow.index
+                        : null
+                    }
+                    onSelect={handleSelectRow}
+                    onDelete={handleDeleteRow}
+                    groupKey="contact_person"
+                    page="Register"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Furnace Type */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Furnace Type</h6>
           </div>
@@ -419,110 +629,199 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                 <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
                   <h6>
                     Crucible Furnace Information
-                    <a className="float-end">Add</a>
+                    <a
+                      href="#"
+                      className="float-end"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddRow("furnace_details", "new_crucible_furnace");
+                      }}
+                    >
+                      Add
+                    </a>
                   </h6>
-                  {[
-                    {
-                      label: "Crucible Size",
-                      name: "crucible_size",
-                      type: "select",
-                      options: ["1701031 DYCOTE 11 M (LIQ)"],
-                      col: 3,
-                    },
-                    { label: "Quantity", name: "crucible_size_qty", col: 1 },
-                    {
-                      label: "Crucible Stand",
-                      name: "crucible_stand",
-                      type: "select",
-                      options: ["IC07976 STAND 360D x 229H CO"],
-                      col: 3,
-                    },
-                    { label: "Quantity", name: "crucible_stand_qty", col: 1 },
-                    {
-                      label: "Function of Furnace",
-                      name: "furnace_function",
-                      type: "select",
-                      options: furnaceFunction,
-                    },
-                    {
-                      label: "Furnace Charge Media",
-                      name: "furnace_charge_media",
-                      type: "select",
-                      options: sortedFurnaceChargeMedia,
-                    },
-                  ].map(({ label, name, type, options, col = 2 }) => (
-                    <div className={`col-${col}`} key={name}>
-                      <div className="form-floating">
-                        {type === "select" ? (
-                          <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
-                            <option value="">-- Select --</option>
-                            {options.map((option, index) => (
-                              <option key={index} value={option}>
-                                {option}
-                              </option>
-                            ))}{" "}
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            className="form-control form-control-sm rounded-4 border border-1 border-dark"
-                            placeholder={label}
-                          />
-                        )}
-                        <label>{label}</label>
+                  {crucibleFurnaceFields.map(
+                    ({ label, name, type, options, col = 2 }) => (
+                      <div className={`col-${col}`} key={name}>
+                        <div className="form-floating">
+                          {type === "select" ? (
+                            <select
+                              className={`form-select form-select-sm rounded-4 border border-1 border-dark ${
+                                companyFormErrors?.new_crucible_furnace?.[name]
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name={name}
+                              value={
+                                initialNewObjects.new_crucible_furnace[name]
+                              }
+                              onChange={(e) =>
+                                handleCompanyDataChange(
+                                  e,
+                                  "new_crucible_furnace"
+                                )
+                              }
+                            >
+                              <option value="">-- Select --</option>
+                              {(
+                                (name === "crucible_size" &&
+                                  crucibleSizeList) ||
+                                (name === "crucible_stand" &&
+                                  crucibleStandList) ||
+                                options
+                              ).map((option, index) => (
+                                <option key={index} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                              {companyFormErrors?.new_crucible_furnace?.[
+                                name
+                              ] && (
+                                <small className="invalid-feedback">
+                                  {companyFormErrors?.new_crucible_furnace?.[
+                                    name
+                                  ] || ""}
+                                </small>
+                              )}
+                            </select>
+                          ) : (
+                            <input
+                              type="text"
+                              className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
+                                companyFormErrors?.new_crucible_furnace?.[name]
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              placeholder={label}
+                              name={name}
+                              value={
+                                initialNewObjects.new_crucible_furnace[name]
+                              }
+                              onChange={(e) =>
+                                handleCompanyDataChange(
+                                  e,
+                                  "new_crucible_furnace"
+                                )
+                              }
+                            />
+                          )}
+                          <label>{label}</label>
+                          {companyFormErrors?.new_crucible_furnace?.[name] && (
+                            <small className="invalid-feedback">
+                              {companyFormErrors?.new_crucible_furnace?.[
+                                name
+                              ] || ""}
+                            </small>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
+                  {companyBasicData?.furnace_details?.filter(
+                    (r) => r.type?.toLowerCase() === "crucible"
+                  ).length > 0 && (
+                    <CompanyTable
+                      columns={crucibleFurnaceColumns}
+                      data={getFilteredData(
+                        companyBasicData?.furnace_details,
+                        "Crucible"
+                      )}
+                      selectedId={
+                        selectedRow.groupKey === "furnace_details"
+                          ? selectedRow.index
+                          : null
+                      }
+                      onSelect={handleSelectRow}
+                      onDelete={handleDeleteRow}
+                      groupKey="furnace_details"
+                      page="Register"
+                    />
+                  )}
                 </div>
               )}
+
               {selectedFurnaceType["Other Furnace"] && (
-                <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
+                <div className="row g-1 align-items-center border border-1 border-dark rounded-4 p-2 my-2 ">
                   <h6>
-                    Other Furnace Information<a className="float-end">Add</a>
+                    Other Furnace Information
+                    <a
+                      href="#"
+                      className="float-end"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddRow("furnace_details", "new_other_furnace");
+                      }}
+                    >
+                      Add
+                    </a>
                   </h6>
-                  {[
-                    {
-                      label: "Furnace Type",
-                      name: "furnace_type",
-                      type: "select",
-                      options: sortedOtherFurnaceType,
-                    },
-                    { label: "Melting Capacity", name: "melting_capacity" },
-                    {
-                      label: "Function of Furnace",
-                      name: "furnace_function",
-                      type: "select",
-                      options: furnaceFunction,
-                    },
-                    {
-                      label: "Charge Media",
-                      name: "charge_media",
-                      type: "select",
-                      options: sortedFurnaceChargeMedia,
-                    },
-                  ].map(({ label, name, type, options, col = 2 }) => (
-                    <div className={`col-${col}`} key={name}>
-                      <div className="form-floating">
-                        {type === "select" ? (
-                          <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
-                            <option value="">-- Select --</option>
-                            {options.map((option, index) => (
-                              <option key={index} value={option}>
-                                {option}
-                              </option>
-                            ))}{" "}
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            className="form-control form-control-sm rounded-4 border border-1 border-dark"
-                            placeholder={label}
-                          />
-                        )}
-                        <label>{label}</label>
+                  {otherFurnaceFields.map(
+                    ({ label, name, type, options, col = 2 }) => (
+                      <div className={`col-${col}`} key={name}>
+                        <div className="form-floating">
+                          {type === "select" ? (
+                            <select
+                              className={`form-select form-select-sm rounded-4 border border-1 border-dark ${
+                                companyFormErrors?.new_other_furnace?.[name]
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name={name}
+                              value={initialNewObjects.new_other_furnace[name]}
+                              onChange={(e) =>
+                                handleCompanyDataChange(e, "new_other_furnace")
+                              }
+                            >
+                              <option value="">-- Select --</option>
+                              {options.map((option, index) => (
+                                <option key={index} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                              {companyFormErrors?.new_other_furnace?.[name] && (
+                                <small className="invalid-feedback">
+                                  {companyFormErrors?.new_other_furnace[name] ||
+                                    ""}
+                                </small>
+                              )}
+                            </select>
+                          ) : (
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                              name={name}
+                              placeholder={label}
+                              value={initialNewObjects.new_other_furnace[name]}
+                              onChange={(e) =>
+                                handleCompanyDataChange(e, "new_other_furnace")
+                              }
+                            />
+                          )}
+                          <label>{label}</label>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
+                  {companyBasicData?.furnace_details?.filter(
+                    (r) => r.type.toLowerCase() !== "crucible"
+                  ).length > 0 && (
+                    <CompanyTable
+                      columns={otherFurnaceColumns}
+                      data={getFilteredData(
+                        companyBasicData?.furnace_details,
+                        "Other"
+                      )}
+                      selectedId={
+                        selectedRow.groupKey === "furnace_details"
+                          ? selectedRow.index
+                          : null
+                      }
+                      onSelect={handleSelectRow}
+                      onDelete={handleDeleteRow}
+                      groupKey="furnace_details"
+                      page="Register"
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -530,7 +829,7 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
         </div>
 
         {/* Foundry Type */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Foundry Type</h6>
           </div>
@@ -547,6 +846,13 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                       type="checkbox"
                       className="form-check-input border border-1 border-dark"
                       id={item}
+                      name={item}
+                      checked={companyBasicData?.type_of_foundry?.includes(
+                        item
+                      )}
+                      onChange={(e) =>
+                        handleCompanyDataChange(e, "type_of_foundry")
+                      }
                     />
                     <label className="form-check-label" htmlFor={item}>
                       {item}
@@ -559,7 +865,7 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
         </div>
 
         {/* Melting Metals & Alloys */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Melting Metals & Alloys</h6>
           </div>
@@ -574,15 +880,16 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                     type="checkbox"
                     className="form-check-input border border-1 border-dark"
                     id={item}
-                    checked={selectedMeltingMetals[item]}
-                    onChange={() => handleMeltingMetalsSelection(item)}
+                    name={item}
+                    checked={companyBasicData?.alloy_type?.includes(item)}
+                    onChange={(e) => handleCompanyDataChange(e, "alloy_type")}
                   />
                   <label className="form-check-label" htmlFor={item}>
                     {item}
                   </label>
                 </div>
               ))}
-              {selectedMeltingMetals.copper_alloys && (
+              {companyBasicData?.alloy_type?.includes("Copper Alloys") && (
                 <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
                   <h6>Select Copper Alloys</h6>
                   {copperAlloys.map((item) => (
@@ -594,6 +901,11 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                         type="checkbox"
                         className="form-check-input border border-1 border-dark"
                         id={item}
+                        name={item}
+                        checked={companyBasicData?.copper_type?.includes(item)}
+                        onChange={(e) =>
+                          handleCompanyDataChange(e, "copper_type")
+                        }
                       />
                       <label className="form-check-label" htmlFor={item}>
                         {item}
@@ -607,7 +919,7 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
         </div>
 
         {/* Manufacturing Method */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Manufacturing Method</h6>
           </div>
@@ -622,6 +934,13 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                     type="checkbox"
                     className="form-check-input border border-1 border-dark"
                     id={item}
+                    name={item}
+                    checked={companyBasicData?.manufacturing_method?.includes(
+                      item
+                    )}
+                    onChange={(e) =>
+                      handleCompanyDataChange(e, "manufacturing_method")
+                    }
                   />
                   <label className="form-check-label" htmlFor={item}>
                     {item}
@@ -633,142 +952,211 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
         </div>
 
         {/* Transfer Laddle */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Transfer Laddle</h6>
           </div>
           <div className="col">
             <div className="row g-1">
-              {[
-                { label: "Lining Material *", name: "lining_material", col: 3 },
-                { label: "Capacity in KG *", name: "capacity" },
-                { label: "Quantity *", name: "quantity", col: 1 },
-              ].map(({ label, name, col = 2 }) => (
+              {transferLaddleFields.map(({ label, name, col = 2 }) => (
                 <div className={`col-${col}`} key={name}>
                   <div className="form-floating">
                     <input
                       type="text"
-                      className="form-control form-control-sm rounded-4 border border-1 border-dark"
+                      className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
+                        companyFormErrors?.new_transfer_laddle?.[name]
+                          ? "is-invalid"
+                          : ""
+                      }`}
                       placeholder={label}
+                      name={name}
+                      value={initialNewObjects.new_transfer_laddle[name]}
+                      onChange={(e) =>
+                        handleCompanyDataChange(e, "new_transfer_laddle")
+                      }
                     />
                     <label>{label}</label>
+                    {companyFormErrors?.new_transfer_laddle?.[name] && (
+                      <small className="invalid-feedback">
+                        {companyFormErrors?.new_transfer_laddle?.[name] || ""}
+                      </small>
+                    )}
                   </div>
                 </div>
               ))}
               <div className="col-md-auto ms-auto">
-                <a className="col-md-1 d-flex align-items-center">Add</a>
+                <a
+                  href="#"
+                  className="col-md-1 d-flex align-items-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAddRow("transfer_ladle", "new_transfer_laddle");
+                  }}
+                >
+                  Add
+                </a>
               </div>
+              {companyBasicData?.transfer_ladle?.length > 0 && (
+                <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
+                  <h6>Transfer Laddle Details</h6>
+                  <CompanyTable
+                    columns={transferLaddleColumns}
+                    data={getFilteredData(companyBasicData?.transfer_ladle)}
+                    selectedId={
+                      selectedRow.groupKey === "transfer_ladle"
+                        ? selectedRow.index
+                        : null
+                    }
+                    onSelect={handleSelectRow}
+                    onDelete={handleDeleteRow}
+                    groupKey="transfer_ladle"
+                    page="Register"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Flux Injector Machine */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Flux Injector Machine</h6>
           </div>
           <div className="col">
             <div className="row g-1">
-              {[
-                { label: "Make", name: "lining_material" },
-                { label: "Quantity", name: "quantity", col: 1 },
-                { label: "Remark", name: "remark" },
-              ].map(({ label, name, col = 3 }) => (
+              {fluxInjectorFields.map(({ label, name, col = 3 }) => (
                 <div className={`col-${col}`} key={name}>
                   <div className="form-floating">
                     <input
                       type="text"
                       className="form-control form-control-sm rounded-4 border border-1 border-dark"
                       placeholder={label}
+                      name={name}
+                      value={companyBasicData?.flux_injector_machine[name]}
+                      onChange={(e) =>
+                        handleCompanyDataChange(e, "flux_injector_machine")
+                      }
                     />
                     <label>{label}</label>
                   </div>
                 </div>
               ))}
-              <div className="col-md-auto ms-auto">
-                <a className="col-md-1 d-flex align-items-center">Add</a>
-              </div>
             </div>
           </div>
         </div>
 
         {/* Capex Details */}
-        <div className="row align-items-start my-4">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Capex Details</h6>
           </div>
           <div className="col">
             <div className="row g-1">
-              {[
-                { label: "Density", name: "density" },
-                { label: "RPT", name: "rpt" },
-              ].map(({ label, name }) => (
+              {densityRptFields.map(({ label, name }) => (
                 <div className="col-md-2" key={name}>
                   <div className="form-floating">
                     <input
                       type="text"
                       className="form-control form-control-sm rounded-4 border border-1 border-dark"
                       placeholder={label}
+                      name={name}
+                      value={companyBasicData[name]}
+                      onChange={(e) =>
+                        handleCompanyDataChange(e, "flat_fields")
+                      }
                     />
                     <label>{label}</label>
                   </div>
                 </div>
               ))}
               <div className="col-md-8"></div>
-              {[
-                {
-                  label: "Degassing Machine",
-                  name: "degassing_machine",
-                  type: "select",
-                  options: degassingMachine,
-                },
-                { label: "Make *", name: "make" },
-                { label: "Quantity *", name: "qty", col: 1 },
-                {
-                  label: "Consumable Products",
-                  name: "consumable_products",
-                  type: "select",
-                  options: consumableProductsType,
-                },
-                {
-                  label: "Product List",
-                  name: "product_list",
-                  type: "select",
-                  options: [],
-                },
-                { label: "Remark", name: "capex_remark" },
-              ].map(({ label, name, type, options, col = 2 }) => (
-                <div className={`col-${col}`} key={name}>
-                  <div className="form-floating">
-                    {type === "select" ? (
-                      <select className="form-select form-select-sm rounded-4 border border-1 border-dark">
-                        <option value="">-- Select --</option>
-                        {options.map((option, index) => (
-                          <option key={index} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        className="form-control form-control-sm rounded-4 border border-1 border-dark"
-                        placeholder={label}
-                      />
-                    )}
-                    <label>{label}</label>
-                  </div>
-                </div>
-              ))}
+              {capexDetailsFields.map(
+                ({ label, name, type, options, col = 2 }) => {
+                  let capexOptions = getCapexOptions(name, options);
+
+                  return (
+                    <div className={`col-${col}`} key={name}>
+                      <div className="form-floating">
+                        {type === "select" ? (
+                          <select
+                            className="form-select form-select-sm rounded-4 border border-1 border-dark"
+                            name={name}
+                            value={initialNewObjects.new_capex_details[name]}
+                            onChange={(e) => {
+                              handleCompanyDataChange(e, "new_capex_details");
+                            }}
+                          >
+                            <option value="">-- Select --</option>
+                            {capexOptions.map((option, index) => (
+                              <option key={index} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
+                              companyFormErrors?.new_capex_details?.[name]
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            placeholder={label}
+                            name={name}
+                            value={initialNewObjects.new_capex_details[name]}
+                            onChange={(e) =>
+                              handleCompanyDataChange(e, "new_capex_details")
+                            }
+                          />
+                        )}
+                        <label>{label}</label>
+                        {companyFormErrors?.new_capex_details?.[name] && (
+                          <small className="invalid-feedback">
+                            {companyFormErrors?.new_capex_details?.[name] || ""}
+                          </small>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+              )}
               <div className="col-md-auto ms-auto">
-                <a className="col-md-1 d-flex align-items-center">Add</a>
+                <a
+                  href="#"
+                  className="col-md-1 d-flex align-items-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAddRow("capex_details", "new_capex_details");
+                  }}
+                >
+                  Add
+                </a>
               </div>
+              {companyBasicData.capex_details.length > 0 && (
+                <div className="row g-1 align-items-center border border-1 border-dark rounded-4 my-2 p-2">
+                  <h6>Capex Details</h6>
+                  <CompanyTable
+                    columns={capexDetailsColumns}
+                    data={getFilteredData(companyBasicData.capex_details)}
+                    selectedId={
+                      selectedRow.groupKey === "capex_details"
+                        ? selectedRow.index
+                        : null
+                    }
+                    onSelect={handleSelectRow}
+                    onDelete={handleDeleteRow}
+                    groupKey="capex_details"
+                    page="Register"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Other Information */}
-        <div className="row align-items-start my-2">
+        <div className="row align-items-start my-3">
           <div className="col-md-2">
             <h6>Other Information</h6>
           </div>
@@ -783,6 +1171,11 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                         style={{ height: 100 }}
                         className="form-control form-control-sm rounded-4 border border-1 border-dark"
                         placeholder={label}
+                        name={name}
+                        value={companyBasicData[name]}
+                        onChange={(e) =>
+                          handleCompanyDataChange(e, "flat_fields")
+                        }
                       />
                       <label>{label}</label>
                     </div>
@@ -790,35 +1183,6 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
                 )
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="row mt-4">
-          <div className="col text-center">
-            <button
-              className="btn btn-primary mx-2"
-              //   onClick={handleCancelClick}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-primary mx-2"
-              //   onClick={handleRegisterClick}
-            >
-              {/* {registerUserLoading ? (
-                <>
-                  &nbsp; Registering{" "}
-                  <span
-                    className="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"
-                  />
-                </>
-              ) : ( */}
-              Register
-              {/* )} */}
-            </button>
           </div>
         </div>
       </div>

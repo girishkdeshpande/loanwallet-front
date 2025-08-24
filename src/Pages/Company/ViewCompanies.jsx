@@ -1,81 +1,90 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { AllCompanies } from "../../Redux/slices/companySlice";
+import {
+  SearchCompany,
+  DeleteCompany,
+  resetDeleteCompanyState,
+  resetSearchCompanyState,
+} from "../../Redux/slices/companySlice";
+import { showWarningMessage } from "../../Redux/slices/globalMessageSlice";
 
+import ViewSingleCompany from "./ViewSingleCompany";
+import { confirmAction } from "../../Components/WarningMessage";
 import Search from "../../Components/Search";
 import Table from "../../Components/Table";
 import Pagination from "../../Components/Pagination";
+import PageSpinner from "../../Components/PageSpinner";
+import NoRecordsFound from "../../Components/NoRecordsFound";
+import NoRecords from "../../Components/NoRecords";
+
 import { companyColumns } from "../../Utilities/TableColumns";
 
 const ViewCompanies = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { allCompanyData, allCompanyError } = useSelector(
-    (state) => state.company.allCompanyState
-  );
+  const { searchCompanyData, searchCompanyLoading, searchCompanyError } =
+    useSelector((state) => state.company.searchCompanyState);
 
-  const [allCompanies, setAllCompanies] = useState([]);
-  const [filteredCompanies, setFilteredCompanies] = useState([]);
+  const [companyRecords, setCompanyRecords] = useState([]);
   const [searchString, setSearchString] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const isBackendPaginated = true;
+  const [isRequestRaised, setIsRequestRaised] = useState(false);
+  const [modalCompanyData, setModalCompanyData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [shouldRenderModal, setShouldRenderModal] = useState(false);
+
+  const isBackendPaginated = false;
 
   // Pagination Logic
   const recordsPerPage = 10;
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const paginatedCompanies = filteredCompanies.slice(
+  const paginatedCompanies = companyRecords.slice(
     indexOfFirstRecord,
     indexOfLastRecord
   );
 
-  //   useEffect(() => {
-  //     let request_parameter =
-  //       "?no_records=" + recordsPerPage + "&page_no=" + currentPage;
-  //     dispatch(AllCompanies(request_parameter));
-  //   }, [dispatch, recordsPerPage, currentPage]);
-
   useEffect(() => {
-    if (allCompanyData) {
-      console.log("All Company Data", allCompanyData.data);
-      setAllCompanies(allCompanyData.data);
+    if (searchCompanyData) {
+      setCompanyRecords(searchCompanyData.data);
+      setIsRequestRaised(true);
     }
 
-    if (allCompanyError) {
-      toast.error(allCompanyError);
+    if (searchCompanyError) {
+      toast.error(searchCompanyError);
+      setIsRequestRaised(false);
     }
-  }, [allCompanyData, allCompanyError]);
+    dispatch(resetSearchCompanyState());
+  }, [dispatch, searchCompanyData, searchCompanyError]);
 
   const handleSearchChange = (value) => {
     setSearchString(value);
     if (value.trim() === "") {
-      setFilteredCompanies([]);
+      setCompanyRecords([]);
+      setIsRequestRaised(false);
     }
   };
 
   /* Handle Search click event */
   const handleSearchClick = (searchString) => {
     if (!searchString.trim()) {
-      setFilteredCompanies([]);
+      setCompanyRecords([]);
       setCurrentPage(1);
       return;
-    } else {
-      const filtered = allCompanies.filter((company) =>
-        `${company.name}`.toLowerCase().includes(searchString.toLowerCase())
-      );
-      if (filtered.length > 0) {
-        setFilteredCompanies(filtered);
-        setCurrentPage(1);
-      } else {
-        toast.error("Record not found");
-        return;
-      }
     }
+    dispatch(SearchCompany({ search_data: searchString }));
   };
 
+  const handleSearchKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearchClick(searchString); // This is your existing function to trigger the API
+    }
+  };
   /* Handle Radio button selection */
   const handleRadioSelection = (companyId) => {
     setSelectedRow((prevSelected) =>
@@ -83,32 +92,69 @@ const ViewCompanies = () => {
     );
   };
 
+  /* Handle View button click */
+  const handleViewClick = (companyId) => {
+    let companyData = companyRecords.find(
+      (company) => company.id === companyId
+    );
+    setModalCompanyData(companyData);
+    setShouldRenderModal(true);
+    setShowModal(true);
+  };
+
+  /* Handle Close button click of View Single User Information click */
+  const handleViewClose = () => {
+    const modalEl = document.getElementById("companyDetailsModal");
+
+    if (window.bootstrap && modalEl) {
+      // Prevent focus-related accessibility warning
+      if (document.activeElement && modalEl.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+
+      const instance = window.bootstrap.Modal.getInstance(modalEl);
+      instance?.hide(); // Trigger Bootstrap fade-out
+    }
+
+    // Delay unmounting to match fade-out duration (300ms)
+    setTimeout(() => {
+      setShowModal(false); // Hide modal JSX
+      setShouldRenderModal(false); // Actually remove from DOM
+    }, 300);
+  };
+
   /* Handle Edit button click */
-  //   const handleEditClick = (companyId) => {
-  // let userData = allUserData.find((user) => user.id === userId);
-  // navigate("/homepage/update_user", { state: { initialData: userData } });
-  //   };
+  const handleEditClick = (companyId) => {
+    let companyData = companyRecords.find(
+      (company) => company.id === companyId
+    );
+    navigate("/homepage/update_company", {
+      state: { initialData: companyData },
+    });
+  };
 
   /* Handle Delete button click */
-  //   const handleDeleteClick = (companyId) => {
-  // confirmAction.current = () => {
-  //   dispatch(DeleteUser(userId)).then((response) => {
-  //     if (response.type === "user/delete/fulfilled") {
-  //       toast.success(response.payload.data);
-  //       navigate("/homepage");
-  //     } else {
-  //       toast.error(response.payload.error);
-  //     }
-  //   });
-  //   dispatch(resetDeleteUserState());
-  // };
-  // dispatch(
-  //   showWarningMessage({
-  //     message: "Are you sure, you want to delete this user ?",
-  //     loadingKey: "user.deleteUserState.deleteUserLoading",
-  //   })
-  // );
-  //   };
+  const handleDeleteClick = (companyId) => {
+    confirmAction.current = () => {
+      dispatch(DeleteCompany(companyId)).then((response) => {
+        if (response.type === "company/delete_company/fulfilled") {
+          toast.success(response.payload.data);
+          window.location.reload();
+        } else {
+          toast.error(response.payload.error);
+        }
+      });
+      dispatch(resetDeleteCompanyState());
+    };
+    dispatch(
+      showWarningMessage({
+        message: "Are you sure, you want to delete this company ?",
+        loadingKey: "company.deleteCompanyState.deleteCompanyLoading",
+      })
+    );
+  };
+
+  console.log("Search Company Data", paginatedCompanies);
 
   return (
     <>
@@ -121,34 +167,52 @@ const ViewCompanies = () => {
           value={searchString}
           onChange={handleSearchChange}
           onSearch={handleSearchClick}
+          onKeyDown={handleSearchKeyDown}
+          label="Search by Company Name or Address"
         />
 
         <div className="col text-end"></div>
 
-        {filteredCompanies.length > 0 && (
+        {searchCompanyLoading ? (
+          <PageSpinner />
+        ) : !isRequestRaised ? (
+          <NoRecords />
+        ) : companyRecords.length === 0 ? (
+          <NoRecordsFound />
+        ) : (
           <>
             <Table
               columns={companyColumns}
               data={paginatedCompanies}
               extraProps={{
                 selectedRow,
+                handleViewClick,
                 handleRadioSelection,
-                // handleEditClick,
-                // handleDeleteClick,
+                handleEditClick,
+                handleDeleteClick,
               }}
             />
 
             {/* Pagination Component */}
-            {/* <div className="pagination-wrapper">
-          <Pagination
-            data={allCompanies}
-            recordsPerPage={recordsPerPage}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-            isBackendPaginated={isBackendPaginated}
-          />
-        </div> */}
+            <div className="pagination-wrapper">
+              <Pagination
+                data={companyRecords}
+                recordsPerPage={recordsPerPage}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                isBackendPaginated={isBackendPaginated}
+              />
+            </div>
           </>
+        )}
+
+        {/* View Single User Information Component */}
+        {showModal && shouldRenderModal && (
+          <ViewSingleCompany
+            companyData={modalCompanyData}
+            show={showModal}
+            onClose={handleViewClose}
+          />
         )}
       </div>
     </>

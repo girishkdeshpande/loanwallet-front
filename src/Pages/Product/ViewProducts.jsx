@@ -69,7 +69,6 @@ const ViewProducts = () => {
 
   useEffect(() => {
     if (productsByNameAndTypeData) {
-      console.log("All Product Data", productsByNameAndTypeData.data);
       setProductsData(productsByNameAndTypeData.data);
       setIsRequestRaised(true);
     }
@@ -185,7 +184,7 @@ const ViewProducts = () => {
         console.log("Delete Product Response:", response.type);
         if (response.type === "product/deleteProduct/fulfilled") {
           toast.success(response.payload.data);
-          navigate("/homepage");
+          window.location.reload();
         } else {
           toast.error(response.payload.error);
         }

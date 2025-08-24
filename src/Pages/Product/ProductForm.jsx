@@ -6,10 +6,17 @@ import {
   meltingMetalsAndAlloys,
   manufacturingMethod,
   customerType,
-  sortedProductType,
 } from "../../Utilities/ListConstants";
 
+import {
+  productBasicInfoFields,
+  crucibleProductTypeFields,
+  capexRadioFields,
+} from "./ProductFormFields";
+
 const ProductForm = ({ productData = {}, onProductFormChange, isEdit }) => {
+  const nameRef = useRef(null);
+
   const [productBasicData, setProductBasicData] = useState({
     name: "",
     HSNcode: "",
@@ -47,6 +54,7 @@ const ProductForm = ({ productData = {}, onProductFormChange, isEdit }) => {
       } else if (!isEdit) {
         setInitialState(productBasicData);
       }
+      nameRef.current?.focus();
     }
     isInitialized.current = true;
   }, [isEdit, productData, productBasicData]);
@@ -130,12 +138,9 @@ const ProductForm = ({ productData = {}, onProductFormChange, isEdit }) => {
           isModified = true;
         }
       });
-
       setIsModified(isModified);
     }
   };
-
-  console.log("Product Basic Data:", productBasicData);
 
   return (
     <>
@@ -182,88 +187,62 @@ const ProductForm = ({ productData = {}, onProductFormChange, isEdit }) => {
           </div>
           <div className="col">
             <div className="row g-1">
-              {[
-                { label: "Product Name *", name: "name" },
-                { label: "HSN Code *", name: "HSNcode", col: 2 },
-                {
-                  label: "Standard Pack Size *",
-                  name: "std_size",
-                  col: 2,
-                },
-                {
-                  label: "Unit *",
-                  name: "standard_pack_size_unit",
-                  col: 1,
-                  type: "select",
-                  options: ["Box", "Kg", "Ltr", "Nos"],
-                },
-                { label: "Price *", name: "price", col: 1 },
-                {
-                  label: "Product Group ",
-                  name: "product_type",
-                  type: "select",
-                  options: sortedProductType,
-                },
-              ].map(({ label, name, type, options, col = 3 }) => (
-                <div className={`col-${col}`} key={name}>
-                  <div className="form-floating">
-                    {type === "select" ? (
-                      <select
-                        className={`form-select form-select-sm rounded-4 border border-1 border-dark ${
-                          name === "standard_pack_size_unit" &&
-                          productFormErrors[name]
-                            ? "is-invalid"
-                            : ""
-                        }`}
-                        name={name}
-                        value={productBasicData[name] || ""}
-                        onChange={handleProductFormChange}
-                        onBlur={handleOnBlur}
-                        data-label={
-                          name === "standard_pack_size_unit" ? label : ""
-                        }
-                      >
-                        <option value="">-- Select --</option>
-                        {options.map((option, index) => (
-                          <option key={index} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
-                          productFormErrors[name] ? "is-invalid" : ""
-                        }`}
-                        placeholder={label}
-                        name={name}
-                        value={productBasicData[name] || ""}
-                        onChange={handleProductFormChange}
-                        onBlur={handleOnBlur}
-                        data-label={label}
-                        autoComplete="off"
-                      />
-                    )}
-                    <label>{label}</label>
-                    {productFormErrors[name] && (
-                      <small className="invalid-feedback">
-                        {productFormErrors[name] || ""}
-                      </small>
-                    )}
+              {productBasicInfoFields.map(
+                ({ label, name, type, options, col = 3 }) => (
+                  <div className={`col-${col}`} key={name}>
+                    <div className="form-floating">
+                      {type === "select" ? (
+                        <select
+                          className={`form-select form-select-sm rounded-4 border border-1 border-dark ${
+                            name === "standard_pack_size_unit" &&
+                            productFormErrors[name]
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          name={name}
+                          value={productBasicData[name] || ""}
+                          onChange={handleProductFormChange}
+                          onBlur={handleOnBlur}
+                          data-label={
+                            name === "standard_pack_size_unit" ? label : ""
+                          }
+                        >
+                          <option value="">-- Select --</option>
+                          {options.map((option, index) => (
+                            <option key={index} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className={`form-control form-control-sm rounded-4 border border-1 border-dark ${
+                            productFormErrors[name] ? "is-invalid" : ""
+                          }`}
+                          placeholder={label}
+                          name={name}
+                          ref={name === "name" ? nameRef : null}
+                          value={productBasicData[name] || ""}
+                          onChange={handleProductFormChange}
+                          onBlur={handleOnBlur}
+                          data-label={label}
+                          autoComplete="off"
+                        />
+                      )}
+                      <label>{label}</label>
+                      {productFormErrors[name] && (
+                        <small className="invalid-feedback">
+                          {productFormErrors[name] || ""}
+                        </small>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
               {productBasicData.product_type === "Crucible" && (
                 <div className="row g-1">
-                  {[
-                    { label: "Top Diameter", name: "top_diameter" },
-                    { label: "Bottom Diameter", name: "bottom_diameter" },
-                    { label: "Height", name: "height" },
-                    { label: "Weight", name: "weight" },
-                    { label: "Water Capacity", name: "water_capacity" },
-                    { label: "Aluminium Capacity", name: "aluminium_capacity" },
-                  ].map(({ label, name }) => (
+                  {crucibleProductTypeFields.map(({ label, name }) => (
                     <div className="col-md-2" key={name}>
                       <div className="form-floating">
                         <input
@@ -414,10 +393,7 @@ const ProductForm = ({ productData = {}, onProductFormChange, isEdit }) => {
           </div>
           <div className="col">
             <div className="row g-1 align-items-center">
-              {[
-                { id: "capex", label: "Yes", value: true },
-                { id: "nonCapex", label: "No", value: false },
-              ].map(({ id, label, value }) => (
+              {capexRadioFields.map(({ id, label, value }) => (
                 <div
                   className="col-md-2 d-flex align-items-center gap-3"
                   key={id}

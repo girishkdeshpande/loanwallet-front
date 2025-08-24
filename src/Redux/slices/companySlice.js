@@ -2,10 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api.js";
 
 export const RegisterCompany = createAsyncThunk(
-  "company/registerCompany",
+  "company/register_company",
   async (company_data, thunkAPI) => {
     try {
-      const response = await api.post("company/register_company", company_data);
+      const response = await api.post("company/registerCompany", company_data);
+      console.log("Register Company Success", response.data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
@@ -39,10 +40,10 @@ export const AllCompanies = createAsyncThunk(
 
 export const UpdateCompany = createAsyncThunk(
   "company/update_company",
-  async (id, update_data, thunkAPI) => {
+  async (update_data, thunkAPI) => {
     try {
       const response = await api.put(
-        `company/updateCompany/${id}`,
+        `company/updateCompany/${update_data.id}`,
         update_data
       );
       return response.data;
@@ -113,7 +114,43 @@ const companySlice = createSlice({
       searchCompanyError: null,
     },
   },
-  reducers: {},
+  reducers: {
+    resetRegisterCompanyState: (state) => {
+      state.registerCompanyState = {
+        registerCompanyData: null,
+        registerCompanyLoading: false,
+        registerCompanyError: null,
+      };
+    },
+    resetDeleteCompanyState: (state) => {
+      state.deleteCompanyState = {
+        deleteCompanyData: null,
+        deleteCompanyLoading: false,
+        deleteCompanyError: null,
+      };
+    },
+    resetSearchCompanyState: (state) => {
+      state.searchCompanyState = {
+        searchCompanyData: null,
+        searchCompanyLoading: false,
+        searchCompanyError: null,
+      };
+    },
+    resetSingleCompanyState: (state) => {
+      state.singleCompanyState = {
+        singleCompanyData: null,
+        singleCompanyLoading: false,
+        singleCompanyError: null,
+      };
+    },
+    resetUpdateCompanyState: (state) => {
+      state.updateCompanyState = {
+        updateCompanyData: null,
+        updatedCompanyLoading: false,
+        updateCompanyError: null,
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(RegisterCompany.pending, (state) => {
@@ -190,4 +227,11 @@ const companySlice = createSlice({
   },
 });
 
+export const {
+  resetRegisterCompanyState,
+  resetDeleteCompanyState,
+  resetSearchCompanyState,
+  resetSingleCompanyState,
+  resetUpdateCompanyState,
+} = companySlice.actions;
 export default companySlice.reducer;

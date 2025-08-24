@@ -15,10 +15,26 @@ export const RegisterProduct = createAsyncThunk(
 
 export const AllProducts = createAsyncThunk(
   "product/allProducts",
-  async (queryParams, thunkAPI) => {
+  async (productTypes, thunkAPI) => {
     try {
-      const response = await api.get(`products/getAllProducts${queryParams}`);
-      return response.data;
+      const types = Array.isArray(productTypes) ? productTypes : [productTypes];
+      const results = {};
+
+      for (const type of types) {
+        const response = await api.get(
+          `products/getAllProducts?product_type=${type}`
+        );
+
+        // Ensure we are reading the array correctly
+        const dataArray = Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(response.data?.data)
+          ? response.data.data
+          : [];
+
+        results[type] = dataArray.map((item) => item.value);
+      }
+      return results;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
     }
@@ -110,6 +126,18 @@ export const ProductSuggestions = createAsyncThunk(
   }
 );
 
+export const ConsumableProducts = createAsyncThunk(
+  "product/consumableProducts",
+  async (_, thunkAPI) => {
+    try {
+      const response = await api.get("products/get_DG_products");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 export const ProductsByNameAndType = createAsyncThunk(
   "product/getProductsByNameType",
   async (queryParams, thunkAPI) => {
@@ -167,6 +195,11 @@ const productSlice = createSlice({
       productSuggestionData: null,
       productSuggestionLoading: false,
       productSuggestionError: null,
+    },
+    consumableProductsState: {
+      consumableProductsData: null,
+      consumableProductsLoading: false,
+      consumableProductsError: null,
     },
     productsByNameAndTypeState: {
       productsByNameAndTypeData: null,
@@ -324,6 +357,20 @@ const productSlice = createSlice({
         state.productSuggestionState.productSuggestionError =
           action.payload.error;
       })
+
+      .addCase(ConsumableProducts.pending, (state) => {
+        state.consumableProductsState.consumableProductsLoading = true;
+      })
+      .addCase(ConsumableProducts.fulfilled, (state, action) => {
+        state.consumableProductsState.consumableProductsLoading = false;
+        state.consumableProductsState.consumableProductsData = action.payload;
+      })
+      .addCase(ConsumableProducts.rejected, (state, action) => {
+        state.consumableProductsState.consumableProductsLoading = false;
+        state.consumableProductsState.consumableProductsError =
+          action.payload.error;
+      })
+
       .addCase(ProductsByNameAndType.pending, (state) => {
         state.productsByNameAndTypeState.productsByNameAndTypeLoading = true;
       })

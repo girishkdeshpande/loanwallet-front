@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 
 import avatar from "D:/loanwallet-front/src/Assets/Images/user_avatar.jpg";
+import {
+  userFormFields,
+  userPasswordFields,
+  userCategoryFields,
+} from "./UserFormFields";
 
 const UserForm = ({
   userData = {},
@@ -111,19 +116,7 @@ const UserForm = ({
           </div>
           <div className="col">
             <div className="row g-1">
-              {[
-                { label: "First Name*", type: "text", name: "first_name" },
-                { label: "Last Name*", type: "text", name: "last_name" },
-                { label: "Contact Number*", type: "text", name: "contactNo" },
-                {
-                  label: "Email*",
-                  type: "email",
-                  name: "email",
-                  col: 3,
-                  disabled: { isEdit },
-                },
-                { label: "Address*", type: "text", name: "address", col: 3 },
-              ].map(({ label, type, name, col = 2 }) => (
+              {userFormFields.map(({ label, type, name, col = 2 }) => (
                 <div className={`col-${col}`} key={name}>
                   <div className="form-floating">
                     <input
@@ -159,10 +152,7 @@ const UserForm = ({
             </div>
             <div className="col">
               <div className="row g-1">
-                {[
-                  { label: "Enter Password*", name: "enterPassword" },
-                  { label: "Re-Enter Password*", name: "password" },
-                ].map(({ label, name }) => (
+                {userPasswordFields.map(({ label, name }) => (
                   <div className="col-3" key={name}>
                     <div className="form-floating">
                       <input
@@ -197,18 +187,7 @@ const UserForm = ({
           </div>
           <div className="col">
             <div className="row g-1 align-items-center">
-              {[
-                {
-                  id: "admin",
-                  label: "Admin",
-                  value: true,
-                },
-                {
-                  id: "nonAdmin",
-                  label: "Non-Admin",
-                  value: false,
-                },
-              ].map(({ id, label, value }) => (
+              {userCategoryFields.map(({ id, label, value }) => (
                 <div
                   key={id}
                   className="col-md-2 d-flex align-items-center gap-3"

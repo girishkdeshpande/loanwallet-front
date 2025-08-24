@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import avatar from "D:/loanwallet-front/src/Assets/Images/user_avatar.jpg";
@@ -15,7 +14,6 @@ import { CamelCase } from "../../Utilities/GlobalFunctions";
 
 const ViewSingleProduct = ({ productData, show, onClose }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const bsModalRef = useRef(null);
   const emailRef = useRef(null);
