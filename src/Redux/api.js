@@ -12,4 +12,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle expired/invalid token (401 Unauthorized)
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response && error.response.status === 401) {
+      // Clear tokens
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("id");
+      localStorage.removeItem("isAdmin");
+      // Redirect to login
+      window.location.href = "/loginform";
+    }
+    return Promise.reject(error);
+  }
+);
 export default api;

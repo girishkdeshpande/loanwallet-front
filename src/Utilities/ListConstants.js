@@ -139,6 +139,9 @@ export const EmailTemplateType = [
   "Initial Payment Reminder",
   "Second Payment Reminder",
   "Third Payment Reminder",
-  "Holiday Information",
+  "Festive Holiday",
   "Weekly Foundry Consumable Schedule - V Square Foundry Products",
 ];
+
+export const PowerBILink =
+  "https://app.powerbi.com/view?r=eyJrIjoiZTk2MDdhNDQtZGZjNC00M2QxLTg3NGEtNDkzNzc4NmQ5ZGFkIiwidCI6IjZhNzU3ZDFjLThhZDItNGM0OC1hYzBjLTZlNzUxZTg5ZTE4YSJ9";

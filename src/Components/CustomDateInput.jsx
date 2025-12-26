@@ -1,23 +1,24 @@
-import React, { forwardRef } from "react";
+import { forwardRef, useId } from "react";
 import "../Styles/DateTimePicker.css"; // Import your CSS file for styling
 
-const CustomDateInput = forwardRef(
-  ({ value, onClick, onIconClick, onClickOutside, open }, ref) => (
+const CustomDateInput = forwardRef(({ value, onIconClick }, ref) => {
+  const id = useId();
+
+  return (
     <div className="input-group">
       <div className="form-floating flex-grow-1 position-relative">
         <input
-          id="floatingCustomDateInput"
+          id={`floatingCustomDateInput-${id}`}
           type="text"
-          name="customDateInput"
+          name="plandate"
           className="form-control mt-1 mb-0 rounded-4 pe-5 border border-1 border-dark"
           placeholder=" "
-          value={value}
-          onClick={onClick}
+          value={value || ""}
+          onClick={onIconClick}
           ref={ref}
-          open={open}
-          onClickOutside={onClickOutside}
+          readOnly
         />
-        <label htmlFor="floatingCustomDateInput">Select Date</label>
+        <label htmlFor={`floatingCustomDateInput-${id}`}>Select Date *</label>
         <span
           className="position-absolute end-0 top-50 translate-middle-y px-3 mt-1 text-muted"
           onClick={(e) => {
@@ -30,7 +31,7 @@ const CustomDateInput = forwardRef(
         </span>
       </div>
     </div>
-  )
-);
+  );
+});
 
 export default CustomDateInput;

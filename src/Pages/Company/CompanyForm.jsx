@@ -239,7 +239,7 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
   const handleCompanyDataChange = (e, group) => {
     const { name, value, checked, type } = e.target;
 
-    // ✅ Clear error for the field being updated
+    // Clear error for the field being updated
     setCompanyFormErrors((prevErrors) => {
       if (prevErrors?.[group]?.[name]) {
         return {
@@ -438,12 +438,10 @@ const CompanyForm = ({ companyData = {}, onCompanyFormChange, isEdit }) => {
         </div>
         {!isEdit && (
           <div className="col-md-8">
-            {/* <div className="col-md-8"> */}
             <small className="text-danger">
-              Note: Mandatory fields to register a company are - Name, Address,
-              Latitude & Longitude.
+              Note: Mandatory fields to register a company are - Company Name,
+              Company Address, Latitude & Longitude.
             </small>
-            {/* </div> */}
           </div>
         )}
 

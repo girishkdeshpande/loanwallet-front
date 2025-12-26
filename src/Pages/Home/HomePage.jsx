@@ -64,14 +64,18 @@ const HomePage = () => {
             <li className="nav-item mx-4 mt-1 text-white menu-pointer">
               <span onClick={() => navigate("/homepage")}> Home </span>
             </li>
-            <li className="nav-item mx-4 mt-1 text-white menu-pointer">
-              <span
-                className={selectedHeader === "Dashboard" ? "text-color" : ""}
-                onClick={() => handleSelectedHeader("Dashboard")}
-              >
-                {" "}
-                Dashboard{" "}
-              </span>
+            <li className="nav-item dropdown mx-4 mt-1 text-white menu-pointer">
+              <span>Dashboard</span>
+              <ul className="dropdown-menu bg-secondary">
+                <li>
+                  <a
+                    className="dropdown-item text-white"
+                    onClick={() => navigate("powerbi_dashboard")}
+                  >
+                    Power BI Dashboard
+                  </a>
+                </li>
+              </ul>
             </li>
             <li className="nav-item dropdown mx-4 mt-1 text-white menu-pointer">
               <span>Company</span>
@@ -197,10 +201,20 @@ const HomePage = () => {
               className={
                 !isAdmin
                   ? "nav-item mx-4 mt-1 text-secondary"
-                  : "nav-item mx-4 mt-1 text-white menu-pointer"
+                  : "nav-item dropdown mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span onClick={() => navigate("email_template")}> Email </span>
+              <span> Email </span>
+              <ul className="dropdown-menu bg-secondary">
+                <li>
+                  <a
+                    className="dropdown-item text-white"
+                    onClick={() => navigate("email_template")}
+                  >
+                    Business Emails
+                  </a>
+                </li>
+              </ul>
             </li>
             <li
               className={

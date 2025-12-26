@@ -80,6 +80,18 @@ export const DeleteCompany = createAsyncThunk(
   }
 );
 
+export const CompanyNames = createAsyncThunk(
+  "company/company_names",
+  async (thunkAPI) => {
+    try {
+      const response = await api.get("company/getCompanyNames");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 const companySlice = createSlice({
   name: "company",
   initialState: {
@@ -112,6 +124,11 @@ const companySlice = createSlice({
       searchCompanyData: null,
       searchCompanyLoading: false,
       searchCompanyError: null,
+    },
+    companyNamesState: {
+      companyNamesData: null,
+      companyNamesLoading: false,
+      companyNamesError: null,
     },
   },
   reducers: {
@@ -223,6 +240,18 @@ const companySlice = createSlice({
       .addCase(DeleteCompany.rejected, (state, action) => {
         state.deleteCompanyState.deleteCompanyLoading = false;
         state.deleteCompanyState.deleteCompanyError = action.payload.error;
+      })
+
+      .addCase(CompanyNames.pending, (state) => {
+        state.companyNamesState.companyNamesLoading = true;
+      })
+      .addCase(CompanyNames.fulfilled, (state, action) => {
+        state.companyNamesState.companyNamesLoading = false;
+        state.companyNamesState.companyNamesData = action.payload;
+      })
+      .addCase(CompanyNames.rejected, (state, action) => {
+        state.companyNamesState.companyNamesLoading = false;
+        state.companyNamesState.companyNamesError = action.payload.error;
       });
   },
 });

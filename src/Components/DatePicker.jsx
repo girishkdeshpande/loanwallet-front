@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
+
 import CustomDateInput from "./CustomDateInput";
+
 import "react-datepicker/dist/react-datepicker.css";
 import "../Styles/DateTimePicker.css"; // Import your CSS file for styling
 
-const CustomDatePicker = () => {
+const CustomDatePicker = ({ value, onChange }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [viewDate, setViewDate] = useState(new Date()); // Tracks visible calendar month
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +28,8 @@ const CustomDatePicker = () => {
   };
 
   const handleOnChange = (date) => {
-    setSelectedDate(date);
+    // setSelectedDate(date);
+    onChange(date);
     setIsOpen(false); // Close the calendar when a date is selected
   };
 
@@ -42,8 +45,8 @@ const CustomDatePicker = () => {
     <>
       <DatePicker
         showPopperArrow={false}
-        selected={selectedDate}
-        dateFormat="dd/MM/yyyy"
+        selected={value}
+        dateFormat="dd-MM-yyyy"
         customInput={<CustomDateInput onIconClick={handleIconClick} />}
         showMonthDropdown
         showYearDropdown
@@ -55,6 +58,12 @@ const CustomDatePicker = () => {
         onChange={handleOnChange}
         onClickOutside={handleOnClickOutSide}
         open={isOpen}
+        renderDayContents={(day, date) =>
+          filterVisibleMonthDates(date) ? day : "\u00A0"
+        }
+        dayClassName={(date) =>
+          date.getDay() === 0 ? "sunday-cell" : undefined
+        }
       />
     </>
   );

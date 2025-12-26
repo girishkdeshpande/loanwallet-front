@@ -56,7 +56,15 @@ const todoSlice = createSlice({
       allEventError: null,
     },
   },
-  reducers: {},
+  reducers: {
+    resetRegisterEventState: (state) => {
+      state.registerEventState = {
+        registerEventData: null,
+        registerEventLoading: false,
+        registerEventError: null,
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(RegisterEvent.pending, (state) => {
@@ -97,4 +105,5 @@ const todoSlice = createSlice({
   },
 });
 
+export const { resetRegisterEventState } = todoSlice.actions;
 export default todoSlice.reducer;

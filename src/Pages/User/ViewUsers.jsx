@@ -294,7 +294,7 @@ const ViewUsers = () => {
                 </option>
               ))}
             </select>
-            <label htmlFor="floatingSelect">Search By Categoty</label>
+            <label htmlFor="floatingSelect">Search By Category</label>
           </div>
         </div>
       </div>

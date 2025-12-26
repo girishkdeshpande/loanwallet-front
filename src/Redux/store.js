@@ -8,6 +8,7 @@ import otherReducer from "./slices/otherSlice.js";
 import globalMessageReducer from "./slices/globalMessageSlice.js";
 import todoReducer from "./slices/todoSlices.js";
 // import all_list_typeReducer from "./slices/allListTypeSlice.js";
+import emailTemplateReducer from "./slices/emailTemplatesSlices.js";
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     product: productReducer,
     todo: todoReducer,
     other: otherReducer,
+    emailTemplates: emailTemplateReducer,
     // all_list_type: all_list_typeReducer,
     globalMessage: globalMessageReducer,
   },

@@ -1,0 +1,205 @@
+/* Outer container styled like Bootstrap input + label */
+.typeahead-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 0.4rem;
+  pointer-events: auto;
+  overflow: visible;
+}
+
+.typeahead-label {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.85rem;
+  width: calc(100% - 3.5rem);
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-style: italic;
+  background-color: var(--bs-body-bg); /* 🔥 important */
+  /* padding: 0 4px; 🔥 prevents overlap */
+  /* line-height: 1; */
+  pointer-events: none;
+  z-index: 60;
+}
+
+.custom-typeahead.disabled ~ .typeahead-label {
+  background-color: var(--bs-secondary-bg); /* EXACT bootstrap disabled bg */
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.custom-typeahead.disabled {
+  background-color: var(--bs-secondary-bg) !important;
+  border-color: #adb5bd !important;
+}
+
+/* Select-like border box */
+.custom-typeahead .rbt-input-multi {
+  border: 1px solid #212529 !important;
+  border-radius: 1rem !important; /* rounded-4 */
+  padding: 0.6rem 2.2rem 0.6rem 0.75rem;
+  padding-top: 1.7rem !important;
+  height: 60px; /* form-select-md height */
+  background-color: #fff;
+  display: flex;
+  align-items: flex-start;
+  cursor: text; /* NEW — ensures click focus */
+  flex-wrap: wrap;
+  overflow-y: auto;
+  overflow-x: hidden;
+  pointer-events: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Remove Typeahead internal borders */
+.custom-typeahead .rbt-input-main {
+  min-height: 24px;
+  border: 1rem;
+  background: transparent;
+  box-shadow: none !important;
+  pointer-events: auto !important;
+  padding: 0;
+  margin: 0;
+  position: relative !important;
+  z-index: 20 !important; /* NEW – ensures clicks go to input */
+  width: 100%;
+  flex: 1 1 auto !important;
+  position: relative;
+  z-index: 10;
+}
+
+.typeahead-wrapper .rbt-input-main input {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 5;
+  width: 100% !important; /* expand input area across entire box */
+  min-width: 100% !important;
+  cursor: text !important;
+}
+
+.custom-typeahead .rbt-input-multi::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Placeholder token like Bootstrap -- Select -- */
+/* .custom-typeahead .rbt-token.placeholder-token {
+  background: transparent !important;
+  border: none !important;
+  color: #6c757d !important; 
+  font-style: italic;
+  padding-left: 0;
+  padding-top: 10px;
+} */
+
+/* Hide remove (×) icon for placeholder */
+/* .custom-typeahead .rbt-token.placeholder-token .rbt-token-remove-button {
+  display: none;
+} */
+
+/* .custom-typeahead .rbt-input-multi::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+} */
+
+/* Tokens spacing */
+.rbt-token {
+  margin-right: 4px;
+}
+
+/* Token text color */
+.custom-typeahead .rbt-token {
+  color: #212529 !important; /* Bootstrap black */
+  background-color: #e9ecef !important;
+  border-color: #ced4da !important;
+  max-height: 100%;
+}
+
+.custom-typeahead .rbt-input-wrapper {
+  max-height: 100%;
+  overflow: visible;
+}
+
+/* Bootstrap-like caret */
+.typeahead-caret {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: #212529;
+  text-shadow: 0 0 1px #000;
+  pointer-events: auto; /* NEW – caret should not block typing */
+  z-index: 30;
+  width: 18px;
+}
+
+.typeahead-wrapper.disabled {
+  pointer-events: none !important;
+}
+
+.custom-typeahead.disabled {
+  opacity: 0.6; /* same as disabled select */
+  background-color: #e9ecef !important; /* Bootstrap disabled bg */
+  border-color: #adb5bd !important; /* lighter border */
+  cursor: not-allowed !important;
+}
+
+/* Disable caret too */
+.custom-typeahead.disabled ~ .typeahead-caret {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* Disable label interaction */
+.custom-typeahead.disabled ~ .typeahead-label {
+  opacity: 0.65;
+}
+
+.rbt-menu {
+  z-index: 1055 !important; /* above label, caret, wrapper */
+  pointer-events: auto !important;
+  max-height: 240px; /* optional but recommended */
+  overflow-y: auto;
+}
+
+/* 🔥 REQUIRED: allow token remove clicks */
+.custom-typeahead .rbt-token,
+.custom-typeahead .rbt-token-remove-button {
+  pointer-events: auto !important;
+  cursor: pointer;
+  z-index: 50;
+}
+
+/* Typeahead dropdown scroll */
+.rbt-menu {
+  max-height: 200px; /* adjust as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* .typeahead-placeholder {
+  position: absolute;
+  top: 1.9rem; 
+  left: 0.9rem;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #6c757d;
+  pointer-events: none;
+  z-index: 5;
+} */
+
+.email-preview {
+  all: revert;
+  max-height: 500px;
+  overflow-y: auto;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+}
+
+.email-preview p {
+  margin-bottom: 0.75rem;
+}

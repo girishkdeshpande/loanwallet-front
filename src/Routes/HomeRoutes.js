@@ -19,6 +19,7 @@ import ViewExpense from "../Pages/Expense/ViewExpense";
 import ToDos from "../Pages/Todo/ToDos";
 import EmailTemplate from "../Pages/Email/EmailTemplate";
 import ViewTransactions from "../Pages/Sales/ViewTransactions";
+import PowerBIDashboard from "../Pages/Dashboard/PowerBIDashboard";
 
 const HomeRoutes = () => [
   <Route path="/homepage" element={<HomePage />} key="homepage">
@@ -92,6 +93,12 @@ const HomeRoutes = () => [
       path="sales_records"
       element={<ViewTransactions />}
       key="sales_records"
+    />
+
+    <Route
+      path="powerbi_dashboard"
+      element={<PowerBIDashboard />}
+      key="powerbi_dashboard"
     />
   </Route>,
 ];

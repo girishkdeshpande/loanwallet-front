@@ -10,8 +10,16 @@ const LoginRoutes = () => [
   <Route path="/" element={<LoginPage />} key="loginpage">
     <Route index element={<Navigate to="loginform" replace />} />
     <Route path="loginform" element={<LoginForm />} key="loginform" />
-    <Route path="forgotpassword" element={<ForgotPassword />} key="forgotpassword" />
-    <Route path="resetpassword" element={<ResetPassword />} key="resetpassword" />
+    <Route
+      path="forgotpassword"
+      element={<ForgotPassword />}
+      key="forgotpassword"
+    />
+    <Route
+      path="resetpassword"
+      element={<ResetPassword />}
+      key="resetpassword"
+    />
   </Route>,
 ];
 
