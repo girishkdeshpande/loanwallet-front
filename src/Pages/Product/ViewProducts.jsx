@@ -226,7 +226,7 @@ const ViewProducts = () => {
         />
 
         <div className="col text-end">
-          <div className="form-floating d-inline-block mt-1">
+          <div className="form-floating d-inline-block mt-1 me-2">
             <select
               className="form-select rounded-4 border border-1 border-dark"
               id="floatingSelect"

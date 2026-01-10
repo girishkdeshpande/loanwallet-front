@@ -37,6 +37,18 @@ export const AllEvents = createAsyncThunk(
   }
 );
 
+export const MonthlyEvents = createAsyncThunk(
+  "event/monthly_events",
+  async (data, thunkAPI) => {
+    try {
+      const response = await api.post("todo/todobymonth", data);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 const todoSlice = createSlice({
   name: "todo",
   initialState: {
@@ -54,6 +66,11 @@ const todoSlice = createSlice({
       allEventData: null,
       allEventLoading: false,
       allEventError: null,
+    },
+    monthlyEventState: {
+      monthlyEventData: null,
+      monthlyEventLoading: false,
+      monthlyEventError: null,
     },
   },
   reducers: {
@@ -101,6 +118,18 @@ const todoSlice = createSlice({
       .addCase(AllEvents.rejected, (state, action) => {
         state.allEventState.allEventLoading = false;
         state.allEventState.allEventError = action.payload.error;
+      })
+
+      .addCase(MonthlyEvents.pending, (state) => {
+        state.monthlyEventState.monthlyEventLoading = true;
+      })
+      .addCase(MonthlyEvents.fulfilled, (state, action) => {
+        state.monthlyEventState.monthlyEventLoading = false;
+        state.monthlyEventState.monthlyEventData = action.payload;
+      })
+      .addCase(MonthlyEvents.rejected, (state, action) => {
+        state.monthlyEventState.monthlyEventLoading = false;
+        state.monthlyEventState.monthlyEventError = action.payload.error;
       });
   },
 });

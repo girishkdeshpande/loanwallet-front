@@ -208,3 +208,51 @@
   color: rgb(235, 109, 109) !important;
   font-weight: 600;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  opacity: 0.7;
+}
+
+.date-cell {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-number {
+  z-index: 1;
+}
+
+.event-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  top: 2px;
+  right: 2px;
+  background-color: rgb(10, 240, 98);
+  border-radius: 50%;
+}
+
+.cursor-not-allowed {
+  pointer-events: none !important;
+  opacity: 0.6; /* same as disabled select */
+  background-color: #e9ecef !important; /* Bootstrap disabled bg */
+  /* border-color: #adb5bd !important; lighter border */
+  /* cursor: not-allowed !important; */
+}
+
+.label-disable {
+  color: #6c757d !important;
+}
+
+.datepicker-on-top {
+  z-index: 1056 !important;
+}

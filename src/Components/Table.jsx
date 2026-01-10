@@ -1,6 +1,9 @@
 import React from "react";
+import moment from "moment";
+import { formatINR } from "../Utilities/GlobalFunctions";
 
 const Table = ({ columns, data, extraProps = {} }) => {
+  console.log("Columns ", columns);
   return (
     <>
       <div className="table-wrapper mt-4">
@@ -12,7 +15,7 @@ const Table = ({ columns, data, extraProps = {} }) => {
               </th>
               {columns.map((col) => (
                 <th key={col.key} style={{ width: col.width }}>
-                  {col.label}
+                  {col.key === "total_amount" ? col.label + " (₹)" : col.label}
                 </th>
               ))}
               <th className="text-center" style={{ width: "3%" }}>
@@ -40,8 +43,18 @@ const Table = ({ columns, data, extraProps = {} }) => {
                     readOnly
                   />
                 </td>
-                {columns.map(({ key, render }) => (
-                  <td key={key}>{render ? render(row) : row[key]}</td>
+                {columns.map(({ key, render, valueResolver }) => (
+                  <td key={key}>
+                    {render
+                      ? render(row)
+                      : valueResolver
+                      ? valueResolver(row)
+                      : key === "total_amount"
+                      ? `₹ ${formatINR(row[key])}`
+                      : key === "trasaction_date"
+                      ? moment(row[key]).format("DD-MM-YYYY")
+                      : row[key]}
+                  </td>
                 ))}
                 <td className="text-center" href="#">
                   <i

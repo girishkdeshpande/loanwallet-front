@@ -1,0 +1,64 @@
+.typeahead-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 0.4rem;
+  overflow: visible;
+}
+
+/* Single-select input box */
+.custom-typeahead .rbt-input {
+  border: 1px solid #212529 !important;
+  border-radius: 1rem !important;
+  height: 60px;
+  background-color: #fff !important;
+  display: flex;
+  align-items: center;
+  cursor: text;
+  overflow: hidden; /* 🔥 IMPORTANT */
+}
+
+/* Internal wrapper */
+.custom-typeahead .rbt-input-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  padding: 1.2rem 0.75rem 0.4rem 0.75rem; /* 🔥 FIX */
+}
+
+/* Actual input */
+.custom-typeahead .rbt-input-main input {
+  width: 100% !important;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0; /* 🔥 no padding here */
+  cursor: pointer;
+}
+
+/* Floating label */
+.typeahead-label {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.85rem;
+  width: calc(100% - 3.5rem);
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-style: italic;
+  background-color: var(--bs-body-bg);
+  pointer-events: none;
+  z-index: 60;
+}
+
+/* Caret */
+.typeahead-caret {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: #212529;
+  pointer-events: auto;
+  z-index: 30;
+  width: 18px;
+}

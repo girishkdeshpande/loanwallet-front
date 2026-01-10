@@ -192,10 +192,20 @@ const HomePage = () => {
               className={
                 !isAdmin
                   ? "nav-item mx-4 mt-1 text-secondary"
-                  : "nav-item mx-4 mt-1 text-white menu-pointer"
+                  : "nav-item dropdown mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span onClick={() => navigate("expense_records")}>Expense</span>
+              <span>Expense</span>
+              <ul className="dropdown-menu bg-secondary">
+                <li>
+                  <a
+                    className="dropdown-item text-white"
+                    onClick={() => navigate("expense_records")}
+                  >
+                    Expense Records
+                  </a>
+                </li>
+              </ul>
             </li>
             <li
               className={
@@ -223,34 +233,36 @@ const HomePage = () => {
                   : "nav-item dropdown mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span onClick={() => navigate("to_dos")}>To-Dos</span>
-              {/* <ul className="dropdown-menu bg-secondary">
+              <span>To-Dos</span>
+              <ul className="dropdown-menu bg-secondary">
                 <li>
                   <a
                     className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("NewToDo")}
+                    onClick={() => navigate("to_dos")}
                   >
-                    New ToDo
+                    Schedule & View
                   </a>
                 </li>
-                <li>
-                  <a
-                    className="dropdown-item text-white"
-                    onClick={() => handleSubMenuClick("ViewToDo")}
-                  >
-                    View ToDos
-                  </a>
-                </li>
-              </ul> */}
+              </ul>
             </li>
             <li
               className={
                 !isAdmin
                   ? "nav-item mx-4 mt-1 text-secondary"
-                  : "nav-item mx-4 mt-1 text-white menu-pointer"
+                  : "nav-item dropdown mx-4 mt-1 text-white menu-pointer"
               }
             >
-              <span onClick={() => navigate("sales_records")}>Sales</span>
+              <span>Sales</span>
+              <ul className="dropdown-menu bg-secondary">
+                <li>
+                  <a
+                    className="dropdown-item text-white"
+                    onClick={() => navigate("sales_records")}
+                  >
+                    Sale-Purchase Records
+                  </a>
+                </li>
+              </ul>
             </li>
             <li className="nav-item mx-4">
               <button

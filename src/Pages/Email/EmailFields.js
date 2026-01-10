@@ -16,7 +16,7 @@ export const checkBoxFields = [
 ];
 
 export const holidayInformationFields = [
-  { label: "Holiday Reason", name: "holiday", col: 3 },
-  { label: "From Date", name: "from_date" },
-  { label: "To Date", name: "to_date" },
+  { label: "Holiday Reason", name: "festive", type: "text", col: 3 },
+  { label: "From Date *", name: "fromDate", type: "date" },
+  { label: "To Date *", name: "toDate", type: "date" },
 ];

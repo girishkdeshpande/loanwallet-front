@@ -19,6 +19,7 @@ import Pagination from "../../Components/Pagination";
 import PageSpinner from "../../Components/PageSpinner";
 import NoRecordsFound from "../../Components/NoRecordsFound";
 import NoRecords from "../../Components/NoRecords";
+import salesColumns from "../../Utilities/TableColumns";
 
 import { companyColumns } from "../../Utilities/TableColumns";
 
@@ -102,7 +103,7 @@ const ViewCompanies = () => {
     setShowModal(true);
   };
 
-  /* Handle Close button click of View Single User Information click */
+  /* Handle Close button click of View Single Company Information click */
   const handleViewClose = () => {
     const modalEl = document.getElementById("companyDetailsModal");
 
@@ -153,8 +154,6 @@ const ViewCompanies = () => {
       })
     );
   };
-
-  console.log("Search Company Data", paginatedCompanies);
 
   return (
     <>

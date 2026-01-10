@@ -89,3 +89,24 @@ export const fluxInjectorMachineColumns = [
   { key: "quantity", label: "Quantity", width: "10%" },
   { key: "remark", label: "Remark", width: "60%" },
 ];
+
+export const salesColumns = [
+  { key: "trasaction_date", label: "Invoice Date", width: "12%" },
+  { key: "invoice_number", label: "Invoice Number", width: "12%" },
+  { key: "transaction_type", label: "Transaction Type", width: "11%" },
+  {
+    key: "company",
+    label: "Company",
+    width: "44%",
+    valueResolver: (row) =>
+      row.transaction_type === "Sale" ? row.to_company : row.from_company,
+  },
+  { key: "total_amount", label: "Total Amount", width: "11%" },
+];
+
+export const transactionDetailsColumns = [
+  { key: "item_code", label: "Item", width: "40%" },
+  { key: "quantity", label: "Quantity", width: "10%" },
+  { key: "unit_price", label: "Individual Price (₹)", width: "20%" },
+  { key: "taxable_amount", label: "Total Price (₹)", width: "15%" },
+];

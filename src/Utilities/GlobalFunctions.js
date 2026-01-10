@@ -27,3 +27,28 @@ export const CamelCase = (str) => {
 //     document.addEventListener("click", handleClickOutside);
 //     return () => document.removeEventListener("click", handleClickOutside);
 //   }, []);
+
+export const isToday = (date) => {
+  if (!date) return false;
+  const today = new Date();
+  return (
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate()
+  );
+};
+
+export const isPastTimeForToday = (date, time) => {
+  if (!date || !time) return false;
+  if (!isToday(date)) return false;
+
+  const now = new Date();
+  return time.getTime() < now.getTime();
+};
+
+export const formatINR = (value) => {
+  if (value === null || value === undefined) return "";
+  return new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: 0,
+  }).format(value);
+};

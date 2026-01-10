@@ -5,49 +5,131 @@ import { toast } from "react-toastify";
 import CustomDatePicker from "../../Components/DatePicker";
 import CustomTimePicker from "../../Components/TimePicker";
 
+import "../../Styles/DateTimePicker.css";
 import {
   RegisterEvent,
   resetRegisterEventState,
+  MonthlyEvents,
 } from "../../Redux/slices/todoSlices";
+
+import { isPastTimeForToday } from "../../Utilities/GlobalFunctions.js";
 
 const ToDos = () => {
   const dispatch = useDispatch();
 
   const { registerEventData, registerEventLoading, registerEventError } =
     useSelector((state) => state.todo.registerEventState);
+  const { monthlyEventData, monthlyEventLoading, monthlyEventError } =
+    useSelector((state) => state.todo.monthlyEventState);
 
   const [formKey, setFormKey] = useState(Date.now());
+  const [viewPlanDate, setViewPlanDate] = useState(new Date());
+  const [eventData, setEventData] = useState({});
+  const [activeMonth, setActiveMonth] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  });
+
   const [scheduleEventData, setScheduleEventData] = useState({
-    plandate: null,
-    plantime: null,
+    plandate: new Date(),
+    plantime: new Date(),
     title: "",
     description: "",
   });
+  const isScheduleEventValid =
+    scheduleEventData &&
+    Object.values(scheduleEventData).every((value) => {
+      if (value instanceof Date) return true;
+      if (typeof value === "string") return value.trim() !== "";
+      return value !== null && value !== undefined;
+    });
 
   useEffect(() => {
+    dispatch(resetRegisterEventState());
     if (registerEventData) {
       toast.success(registerEventData?.data);
       setScheduleEventData({
-        plandate: null,
-        plantime: null,
+        plandate: new Date(),
+        plantime: new Date(),
         title: "",
         description: "",
       });
+      handleScheduleSuccess(
+        scheduleEventData?.plandate.toISOString().split("T")[0]
+      );
     }
 
     if (registerEventError) {
       toast.error(registerEventError);
     }
-  }, [registerEventData, registerEventError]);
+  }, [registerEventData, registerEventError, dispatch]);
 
+  useEffect(() => {
+    dispatch(MonthlyEvents({ date: activeMonth }))
+      .unwrap()
+      .then((response) => setEventData(response.data.eventObject))
+      .catch((error) => {
+        toast.error(error);
+      });
+  }, [activeMonth, dispatch]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === "ArrowLeft") handlePrevDate();
+      if (e.key === "ArrowRight") handleNextDate();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  useEffect(() => {
+    const { plandate, plantime } = scheduleEventData;
+
+    if (isPastTimeForToday(plandate, plantime)) {
+      const now = new Date();
+
+      setScheduleEventData((prev) => ({
+        ...prev,
+        plantime: now, // ✅ auto-correct
+      }));
+    }
+  }, [scheduleEventData.plandate]);
+
+  const getDateKey = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const selectedDateKey = getDateKey(viewPlanDate);
+  const selectedDateRecords = eventData?.[selectedDateKey] || [];
+
+  const handleScheduleSuccess = (scheduledDate) => {
+    const scheduledMonth = scheduledDate.slice(0, 7); // yyyy-mm
+
+    // Only refetch if this month is already loaded
+    if (scheduledMonth === activeMonth) {
+      dispatch(MonthlyEvents({ date: activeMonth }))
+        .unwrap()
+        .then((response) => setEventData(response.data.eventObject))
+        .catch((error) => toast.error(error));
+    }
+  };
+
+  const handleMonthYearChange = (date) => {
+    setActiveMonth(
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+    );
+  };
   const handleScheduleEventChange = (field, value) => {
     setScheduleEventData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCancelClick = () => {
     setScheduleEventData({
-      plandate: null,
-      plantime: null,
+      plandate: new Date(),
+      plantime: new Date(),
       title: "",
       description: "",
     });
@@ -56,7 +138,6 @@ const ToDos = () => {
   const handleScheduleClick = () => {
     const user_id = localStorage.getItem("id");
 
-    console.log("User Id", user_id);
     const payload = {
       user_id,
       plandate: scheduleEventData.plandate
@@ -77,8 +158,46 @@ const ToDos = () => {
       title: scheduleEventData.title,
       description: scheduleEventData.description,
     };
-    // console.log("ToDo Payload", payload);
+    console.log("ToDo Payload", payload);
     dispatch(RegisterEvent(payload));
+  };
+
+  const addDays = (date, days) => {
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+  };
+
+  const isDifferentMonth = (d1, d2) =>
+    d1.getFullYear() !== d2.getFullYear() || d1.getMonth() !== d2.getMonth();
+
+  const handlePrevDate = () => {
+    setViewPlanDate((prev) => {
+      const newDate = addDays(prev, -1);
+
+      if (isDifferentMonth(prev, newDate)) {
+        handleMonthYearChange(newDate); // 🔥 trigger API
+      }
+
+      return newDate;
+    });
+  };
+
+  const handleNextDate = () => {
+    setViewPlanDate((prev) => {
+      const newDate = addDays(prev, 1);
+
+      if (isDifferentMonth(prev, newDate)) {
+        handleMonthYearChange(newDate); // 🔥 trigger API
+      }
+
+      return newDate;
+    });
+  };
+
+  const hasEventsForDate = (date) => {
+    const key = getDateKey(date);
+    return Boolean(eventData?.[key]?.length);
   };
 
   return (
@@ -98,14 +217,18 @@ const ToDos = () => {
                   onChange={(plandate) =>
                     handleScheduleEventChange("plandate", plandate)
                   }
+                  disablePastDates
+                  label="Select Date *"
                 />
               </div>
               <div className="col-md-2">
                 <CustomTimePicker
                   value={scheduleEventData.plantime}
+                  selectedDate={scheduleEventData.plandate}
                   onChange={(plantime) =>
                     handleScheduleEventChange("plantime", plantime)
                   }
+                  disablePastTimes
                 />
               </div>
             </div>
@@ -144,6 +267,7 @@ const ToDos = () => {
               <button
                 className="btn btn-primary mx-2"
                 onClick={handleScheduleClick}
+                disabled={!isScheduleEventValid}
               >
                 Schedule
               </button>
@@ -160,33 +284,64 @@ const ToDos = () => {
         <div className="col">
           <div className="row g-1 d-flex justify-content-center align-items-center">
             <div className="col-auto me-5">
-              <i className="bi bi-chevron-left fs-4 cursor-pointer"></i>
+              <i
+                className="bi bi-chevron-left fs-4 cursor-pointer"
+                onClick={handlePrevDate}
+              ></i>
             </div>
 
             <div className="col-md-2">
-              <CustomDatePicker />
+              <CustomDatePicker
+                value={viewPlanDate}
+                onChange={(date) => setViewPlanDate(date)}
+                onMonthYearChange={handleMonthYearChange}
+                showEventDots
+                hasEventForDate={hasEventsForDate}
+                label="Select Date *"
+              />
             </div>
 
             <div className="col-auto ms-5">
-              <i className="bi bi-chevron-right fs-4 cursor-pointer"></i>
+              <i
+                className="bi bi-chevron-right fs-4 cursor-pointer"
+                onClick={handleNextDate}
+              ></i>
             </div>
           </div>
         </div>
 
-        <div className="col mt-3">
-          <table className="table table-striped table-bordered">
-            <thead className="table-dark">
-              <tr>
-                <th style={{ width: "5%" }}>Sr. No.</th>
-                <th style={{ width: "15%" }}>Event Scheduler</th>
-                <th style={{ width: "10%" }}>Event Time</th>
-                <th style={{ width: "35%" }}>Event Title</th>
-                <th style={{ width: "35%" }}>Event Description</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        {selectedDateRecords.length > 0 ? (
+          <div className="col mt-3">
+            <table className="table table-striped table-bordered">
+              <thead className="table-dark">
+                <tr>
+                  <th style={{ width: "5%" }}>Sr. No.</th>
+                  <th style={{ width: "15%" }}>Event Scheduler</th>
+                  <th style={{ width: "10%" }}>Event Time</th>
+                  <th style={{ width: "35%" }}>Event Title</th>
+                  <th style={{ width: "35%" }}>Event Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedDateRecords.map((event, index) => (
+                  <tr key={event.id}>
+                    <td>{index + 1}</td>
+                    <td>{event.user_name}</td>
+                    <td>{event.plan_time}</td>
+                    <td>{event.title}</td>
+                    <td>{event.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="col mt-5">
+            <p style={{ fontSize: "1.25rem" }} className="text-center">
+              No Events Scheduled for the selected date.
+            </p>
+          </div>
+        )}
       </div>
     </>
   );

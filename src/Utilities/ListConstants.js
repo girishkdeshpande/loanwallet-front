@@ -145,3 +145,20 @@ export const EmailTemplateType = [
 
 export const PowerBILink =
   "https://app.powerbi.com/view?r=eyJrIjoiZTk2MDdhNDQtZGZjNC00M2QxLTg3NGEtNDkzNzc4NmQ5ZGFkIiwidCI6IjZhNzU3ZDFjLThhZDItNGM0OC1hYzBjLTZlNzUxZTg5ZTE4YSJ9";
+
+// export const COMPANY_SELECT_OPTION = useMemo(
+//   () => ({
+//     company_id: "",
+//     company_name: "-- Select --",
+//     isPlaceholder: true,
+//   }),
+//   []
+// );
+// export const CONTACT_SELECT_OPTION = useMemo(
+//   () => ({
+//     id: "",
+//     full_name: "-- Select --",
+//     isPlaceholder: true,
+//   }),
+//   []
+// );

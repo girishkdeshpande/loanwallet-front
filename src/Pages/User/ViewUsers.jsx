@@ -260,7 +260,7 @@ const ViewUsers = () => {
     <>
       <div className="row align-items-center">
         <div className="col text-start">
-          <h5 className="mt-2"> User Records </h5>
+          <h5> User Records </h5>
         </div>
 
         {/* Search Component */}

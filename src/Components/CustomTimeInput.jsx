@@ -11,12 +11,13 @@ const CustomTimeInput = forwardRef(
           className="form-control mt-1 mb-0 rounded-4 pe-5 border border-1 border-dark"
           placeholder=" "
           value={value}
-          onClick={onClick}
+          onClick={onIconClick}
           ref={ref}
           open={open}
           onClickOutside={onClickOutside}
+          readOnly
         />
-        <label htmlFor="floatingCustomTimeInput">Select Time</label>
+        <label htmlFor="floatingCustomTimeInput">Select Time *</label>
         <span
           className="position-absolute end-0 top-50 translate-middle-y px-3 mt-1 text-muted"
           onClick={(e) => {

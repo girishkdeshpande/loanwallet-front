@@ -9,6 +9,7 @@ import globalMessageReducer from "./slices/globalMessageSlice.js";
 import todoReducer from "./slices/todoSlices.js";
 // import all_list_typeReducer from "./slices/allListTypeSlice.js";
 import emailTemplateReducer from "./slices/emailTemplatesSlices.js";
+import salesReducer from "./slices/salesSlices.js";
 
 const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ const store = configureStore({
     emailTemplates: emailTemplateReducer,
     // all_list_type: all_list_typeReducer,
     globalMessage: globalMessageReducer,
+    sales: salesReducer,
   },
 });
 
