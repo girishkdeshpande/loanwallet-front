@@ -1,0 +1,34 @@
+.expense-img {
+  width: 250px;
+  height: 250px;
+}
+
+.attachment-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.image-box {
+  position: relative;
+}
+
+.zoom-tools {
+  /* position: absolute; */
+  /* top: 4px;
+  left: 4px; */
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+  /* z-index: 10; */
+}
+
+.zoom-tools button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #000;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}

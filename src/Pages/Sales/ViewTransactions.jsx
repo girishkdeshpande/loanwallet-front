@@ -11,7 +11,6 @@ import "../../Styles/SingleSelectTypeahead.css";
 
 import CustomDatePicker from "../../Components/DatePicker";
 import Table from "../../Components/Table";
-
 import SingleSelectTypeahead from "../../Components/SingleSelectTypeahead";
 import PageSpinner from "../../Components/PageSpinner";
 import Pagination from "../../Components/Pagination";
@@ -19,6 +18,7 @@ import NoRecordsFound from "../../Components/NoRecordsFound";
 import NoRecords from "../../Components/NoRecords";
 import ViewSingleTransaction from "./ViewSingleTransaction";
 import { salesColumns } from "../../Utilities/TableColumns";
+import { formatDate } from "../../Utilities/GlobalFunctions";
 
 const ViewTransactions = () => {
   const dispatch = useDispatch();
@@ -63,10 +63,10 @@ const ViewTransactions = () => {
   const isDateRangeSelected =
     tallyData.from_date !== null && tallyData.to_date !== null;
 
-  const isCompanySelected =
-    Array.isArray(tallyData.company_name) && tallyData.company_name.length > 0;
+  //   const isCompanySelected =
+  //     Array.isArray(tallyData.company_name) && tallyData.company_name.length > 0;
 
-  const isSubmitDisabled = !(isDateRangeSelected || isCompanySelected);
+  //   const isSubmitDisabled = !isDateRangeSelected || !isCompanySelected;
 
   useEffect(() => {
     dispatch(TallyCompanyNames());
@@ -81,6 +81,8 @@ const ViewTransactions = () => {
   }, [tallyCompanyNamesData]);
 
   const handleCompanySelection = (selected) => {
+    if (selected === "--Select--") return;
+
     setTallyData((prev) => ({
       ...prev,
       company_name: selected,
@@ -107,6 +109,25 @@ const ViewTransactions = () => {
         };
       }
 
+      if (prev.from_date === null) {
+        return {
+          ...prev,
+          to_date: null,
+        };
+      }
+
+      // 2️⃣ to_date > from_date + 30 days
+      const maxToDate = new Date(prev.from_date);
+      maxToDate.setDate(maxToDate.getDate() + 30);
+
+      if (prev.from_date !== null && date > maxToDate) {
+        toast.error("Date range cannot exceed 30 days");
+        return {
+          ...prev,
+          to_date: maxToDate, // 🔥 snap to 30th day
+        };
+      }
+
       setDateError("");
       return {
         ...prev,
@@ -116,17 +137,13 @@ const ViewTransactions = () => {
   };
 
   const buildPayload = () => {
-    const selectedCompany = tallyData.company_name[0] || null;
+    const selectedCompany = tallyData.company_name || null;
     return {
       company_name: selectedCompany ?? "",
 
-      fromDate: tallyData.from_date
-        ? tallyData.from_date.toISOString().split("T")[0]
-        : null,
+      fromDate: tallyData.from_date ? formatDate(tallyData.from_date) : null,
 
-      toDate: tallyData.to_date
-        ? tallyData.to_date.toISOString().split("T")[0]
-        : null,
+      toDate: tallyData.to_date ? formatDate(tallyData.to_date) : null,
     };
   };
 
@@ -193,6 +210,8 @@ const ViewTransactions = () => {
     }, 300);
   };
 
+  console.log("TallyData: ", tallyData);
+
   return (
     <>
       <div className="row align-items-center">
@@ -218,19 +237,16 @@ const ViewTransactions = () => {
           />
         </div>
 
-        {/* <h7> OR </h7> */}
-
         <div className="col-md-4 text-start">
           <SingleSelectTypeahead
             id="tally_transaction"
-            label="Select Company"
+            label="Select Company (Optional)"
             options={companyOptions}
             typeaheadRef={companyRef}
             selected={tallyData.company_name}
             onChange={handleCompanySelection}
             placeholder="--Select--"
             className="custom-typeahead"
-            // labelKey={(option) => option}
           />
         </div>
 
@@ -238,7 +254,7 @@ const ViewTransactions = () => {
           <button
             className="btn btn-primary"
             onClick={handleSubmitClick}
-            disabled={isSubmitDisabled}
+            disabled={!isDateRangeSelected}
           >
             Submit
           </button>
@@ -257,12 +273,11 @@ const ViewTransactions = () => {
             <Table
               columns={salesColumns}
               data={paginatedTransactions}
+              page="view_sales"
               extraProps={{
                 selectedRow,
                 handleRadioSelection,
                 handleViewClick,
-                // handleEditClick,
-                // handleDeleteClick,
               }}
             />
 

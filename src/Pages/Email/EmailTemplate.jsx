@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Typeahead } from "react-bootstrap-typeahead";
 import { toast } from "react-toastify";
 
 import { CompanyNames } from "../../Redux/slices/companySlice";
@@ -13,11 +12,13 @@ import {
 import "../../Styles/Email.css";
 import "../../Styles/MultiSelectTypeahead.css";
 
-import { EmailTemplateType } from "../../Utilities/ListConstants";
 import PageSpinner from "../../Components/PageSpinner";
 import CustomDatePicker from "../../Components/DatePicker";
-import { holidayInformationFields } from "./EmailFields";
 import MultiSelectTypeahead from "../../Components/MultiSelectTypeahead";
+
+import { EmailTemplateType } from "../../Utilities/ListConstants";
+
+import { holidayInformationFields } from "./EmailFields";
 
 const EmailTemplate = () => {
   const dispatch = useDispatch();
@@ -282,7 +283,7 @@ const EmailTemplate = () => {
       c.full_name.split("-")[0].trim()
     );
     let templateContent = {};
-    console.log("Festive Data", holidayData);
+
     if (selectedTemplateMeta.file === "festive.html") {
       templateContent = {
         festive: holidayData.festive,
@@ -394,9 +395,7 @@ const EmailTemplate = () => {
       });
   };
 
-  console.log("Selected Contact Persons", selectedContacts);
-  console.log("Contact Person Options", contactPersonOptions);
-
+  
   return templateNameLoading || companyNamesLoading ? (
     <PageSpinner />
   ) : (

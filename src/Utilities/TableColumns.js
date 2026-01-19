@@ -98,7 +98,7 @@ export const salesColumns = [
     key: "company",
     label: "Company",
     width: "44%",
-    valueResolver: (row) =>
+    render: (row) =>
       row.transaction_type === "Sale" ? row.to_company : row.from_company,
   },
   { key: "total_amount", label: "Total Amount", width: "11%" },
@@ -107,6 +107,99 @@ export const salesColumns = [
 export const transactionDetailsColumns = [
   { key: "item_code", label: "Item", width: "40%" },
   { key: "quantity", label: "Quantity", width: "10%" },
-  { key: "unit_price", label: "Individual Price (₹)", width: "20%" },
+  { key: "unit_price", label: "Per Quantity Price (₹)", width: "20%" },
   { key: "taxable_amount", label: "Total Price (₹)", width: "15%" },
+];
+
+export const visitColumns = [
+  { key: "date_of_visit", label: "Visit Date", width: "8%" },
+  { key: "time_of_visit", label: "Visit Time", width: "7%" },
+  { key: "user_name", label: "Visit By", width: "12%" },
+  { key: "company_name", label: "Visit to Company", width: "16%" },
+  {
+    key: "quotation",
+    label: "Quotation ?",
+    width: "8%",
+    render: (row) => (row.quotation === null ? "No" : "Yes"),
+  },
+  {
+    key: "valid_visit",
+    label: "Valid Visit",
+    width: "8%",
+    render: (row) => (row.valid_visit === false ? "No" : "Yes"),
+  },
+  { key: "summary", label: "Summary", width: "37%", truncate: true },
+];
+
+export const expenseColumns = [
+  { key: "timeline", label: "Expense Date", width: "10%" },
+  {
+    key: "user_name",
+    label: "Expense Raised By",
+    width: "15%",
+    render: (row) =>
+      row.user.first_name && row.user.last_name
+        ? row.user.first_name + " " + row.user.last_name
+        : row.user.first_name || row.user.last_name,
+  },
+  { key: "category", label: "Expense Category", width: "12%" },
+  { key: "summary", label: "Expense Summary", width: "40%", truncate: true },
+  { key: "price", label: "Expense Amount", width: "13%" },
+  {
+    key: "status",
+    label: "Status",
+    width: "10%",
+    render: (row) => (row.approved === false ? "Not Approved" : "Approved"),
+  },
+];
+
+export const quotationColumns = [
+  { key: "date", label: "Date", width: "10%" },
+  { key: "user_name", label: "Quotation Prepared By", width: "25%" },
+  { key: "company_name", label: "Prepared for Company", width: "42%" },
+  { key: "total_price", label: "Quotation Amount", width: "13%" },
+  {
+    key: "open_close_status",
+    label: "Status",
+    width: "10%",
+    render: (row) => (row.open_close_status === false ? "Closed" : "Open"),
+  },
+];
+
+export const quotationDetailsColumns = [
+  {
+    key: "name",
+    label: "Product Name",
+    width: "40%",
+    render: (row) => row.product.name || "",
+  },
+  {
+    key: "HSNcode",
+    label: "HSN Code",
+    width: "10%",
+    render: (row) => row.product.HSNcode || "",
+  },
+  { key: "gst", label: "GST", width: "5%" },
+  { key: "price", label: "Price", width: "10%" },
+];
+
+export const quotationPreviewColumns = [
+  { key: "name", label: "Product Name", width: "20%" },
+  { key: "HSNcode", label: "HSN Code", width: "10%" },
+  { key: "std_size", label: "Pack Size", width: "5%" },
+  { key: "price", label: "Unit Price", width: "7%" },
+  { key: "gst", label: "GST", width: "5%" },
+  { key: "total_price", label: "Total Price", width: "10%" },
+];
+
+export const todoColumns = [
+  { key: "user_name", label: "Event Scheduler", width: "15%" },
+  { key: "plan_time", label: "Event Time", width: "10%" },
+  { key: "title", label: "Event Title", width: "35%" },
+  {
+    key: "description",
+    label: "Event Description",
+    width: "35%",
+    truncate: true,
+  },
 ];

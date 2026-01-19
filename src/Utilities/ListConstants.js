@@ -17,7 +17,7 @@ const contactPersonDesignation = [
 ];
 
 export const sortedDesignation = [...contactPersonDesignation].sort((a, b) =>
-  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
 );
 
 export const degassingMachine = [
@@ -78,7 +78,7 @@ const furnaceChargeMedia = [
 ];
 
 export const sortedFurnaceChargeMedia = [...furnaceChargeMedia].sort((a, b) =>
-  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
 );
 
 export const copperAlloys = [
@@ -102,7 +102,7 @@ const otherFurnaceType = [
 ];
 
 export const sortedOtherFurnaceType = [...otherFurnaceType].sort((a, b) =>
-  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
 );
 
 export const consumableProductsType = ["Rotar", "Shaft", "Bottle Plate"];
@@ -131,7 +131,7 @@ const productType = [
 ];
 
 export const sortedProductType = [...productType].sort((a, b) =>
-  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
 );
 
 export const EmailTemplateType = [
@@ -143,22 +143,20 @@ export const EmailTemplateType = [
   "Weekly Foundry Consumable Schedule - V Square Foundry Products",
 ];
 
+export const QuotationSearchField = ["Company", "Status", "User"];
+
+export const quotationPrice = ["Ex. Works Pune Godown", "Other"];
+export const quotationDeliveryPeriod = [
+  "7-8 days after PO confirmation",
+  "Lead Time",
+];
+export const quotationFreight = ["Amount", "Buyer Side/To Pay Basis", "Nil"];
+export const quotationPayment = [
+  "Advance Payment",
+  "Against Delivery",
+  "Against Proforma Invoice",
+  "Credit",
+];
+
 export const PowerBILink =
   "https://app.powerbi.com/view?r=eyJrIjoiZTk2MDdhNDQtZGZjNC00M2QxLTg3NGEtNDkzNzc4NmQ5ZGFkIiwidCI6IjZhNzU3ZDFjLThhZDItNGM0OC1hYzBjLTZlNzUxZTg5ZTE4YSJ9";
-
-// export const COMPANY_SELECT_OPTION = useMemo(
-//   () => ({
-//     company_id: "",
-//     company_name: "-- Select --",
-//     isPlaceholder: true,
-//   }),
-//   []
-// );
-// export const CONTACT_SELECT_OPTION = useMemo(
-//   () => ({
-//     id: "",
-//     full_name: "-- Select --",
-//     isPlaceholder: true,
-//   }),
-//   []
-// );

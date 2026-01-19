@@ -151,14 +151,14 @@ const HomePage = () => {
                     Visit Records
                   </a>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     className="dropdown-item text-white"
                     onClick={() => handleSubMenuClick("VisitReport")}
                   >
                     Visit Report
                   </a>
-                </li>
+                </li> */}
               </ul>
             </li>
             <li

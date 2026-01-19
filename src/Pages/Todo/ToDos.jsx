@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
-import CustomDatePicker from "../../Components/DatePicker";
-import CustomTimePicker from "../../Components/TimePicker";
-
-import "../../Styles/DateTimePicker.css";
 import {
   RegisterEvent,
   resetRegisterEventState,
   MonthlyEvents,
 } from "../../Redux/slices/todoSlices";
 
+import "../../Styles/DateTimePicker.css";
+
+import CustomDatePicker from "../../Components/DatePicker";
+import CustomTimePicker from "../../Components/TimePicker";
+import Table from "../../Components/Table";
+
 import { isPastTimeForToday } from "../../Utilities/GlobalFunctions.js";
+import { todoColumns } from "../../Utilities/TableColumns.js";
 
 const ToDos = () => {
   const dispatch = useDispatch();
@@ -312,7 +314,12 @@ const ToDos = () => {
 
         {selectedDateRecords.length > 0 ? (
           <div className="col mt-3">
-            <table className="table table-striped table-bordered">
+            <Table
+              columns={todoColumns}
+              data={selectedDateRecords}
+              page="view_todos"
+            />
+            {/* <table className="table table-striped table-bordered">
               <thead className="table-dark">
                 <tr>
                   <th style={{ width: "5%" }}>Sr. No.</th>
@@ -333,7 +340,7 @@ const ToDos = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table> */}
           </div>
         ) : (
           <div className="col mt-5">

@@ -10,6 +10,9 @@ import todoReducer from "./slices/todoSlices.js";
 // import all_list_typeReducer from "./slices/allListTypeSlice.js";
 import emailTemplateReducer from "./slices/emailTemplatesSlices.js";
 import salesReducer from "./slices/salesSlices.js";
+import visitReducer from "./slices/visitSlices.js";
+import expenseReducer from "./slices/expenseSlices.js";
+import quotationReducer from "./slices/quotationSlices.js";
 
 const store = configureStore({
   reducer: {
@@ -23,6 +26,9 @@ const store = configureStore({
     // all_list_type: all_list_typeReducer,
     globalMessage: globalMessageReducer,
     sales: salesReducer,
+    visits: visitReducer,
+    expense: expenseReducer,
+    quotation: quotationReducer,
   },
 });
 

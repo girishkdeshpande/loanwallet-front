@@ -41,7 +41,7 @@ const NewCompany = () => {
   const handleRegisterCompanyChange = (
     updatedCompanyData,
     isFormValid,
-    isFieldModified
+    isFieldModified,
   ) => {
     if (isFormValid) {
       setIsFormValid(true);
@@ -92,7 +92,7 @@ const NewCompany = () => {
         showWarningMessage({
           message: "Are you sure, you want to discard changes ?",
           loadingKey: "",
-        })
+        }),
       );
     } else {
       navigate("/homepage");

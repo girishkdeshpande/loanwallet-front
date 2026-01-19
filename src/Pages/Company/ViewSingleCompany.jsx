@@ -67,7 +67,6 @@ const ViewSingleCompany = ({ companyData, show, onClose }) => {
     }
   }, [companyData]);
 
-  console.log("Company Data Contact Person", companyData);
   return (
     <div
       className="modal fade"

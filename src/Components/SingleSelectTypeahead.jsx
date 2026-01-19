@@ -6,16 +6,59 @@ const SingleSelectTypeahead = ({
   id,
   label,
   options = [],
-  selected = null,
+  selected = [],
   onChange,
   placeholder,
   multiple = false,
   disabled = false,
-  labelKey = "label",
+  labelKey,
   className = "",
   typeaheadRef,
-  isLocked = false,
 }) => {
+  const isObjectOptions =
+    Array.isArray(options) &&
+    options.length > 0 &&
+    typeof options[0] === "object";
+
+  /* ✅ Normalize selected to ARRAY */
+  const normalizedSelected = Array.isArray(selected)
+    ? selected
+    : selected
+    ? [selected]
+    : [];
+
+  //   const resolvedLabelKey = isObjectOptions
+  //     ? labelKey || ((option) => option?.label ?? "")
+  //     : (option) => option;
+
+  //   const typeaheadFilterBy = (option, props, labelKey) => {
+  //     const text = props.text?.toLowerCase() || "";
+
+  //     return typeof option === "string"
+  //       ? option.toLowerCase().includes(text)
+  //       : option[labelKey]?.toLowerCase().includes(text);
+  //   };
+
+  //   const filterByHandler = (labelKey) => (option, props) =>
+  //     typeaheadFilterBy(option, props, labelKey);
+  const safeSelected = normalizedSelected.filter((opt) => !opt?.isPlaceholder);
+
+  const handleChange = (items) => {
+    if (!items || items.length === 0) {
+      onChange(null);
+      return;
+    }
+
+    const value = items[0];
+
+    if (value?.isPlaceholder || value === "-- Select --") {
+      onChange(null);
+      return;
+    }
+
+    onChange(value);
+  };
+
   const handleCaretClick = (e) => {
     e.stopPropagation();
     typeaheadRef?.current.toggleMenu();
@@ -28,9 +71,9 @@ const SingleSelectTypeahead = ({
         ref={typeaheadRef}
         multiple={multiple}
         options={options}
-        selected={selected}
-        onChange={onChange}
-        labelKey={labelKey}
+        selected={safeSelected}
+        onChange={handleChange}
+        labelKey={isObjectOptions ? labelKey : undefined}
         minLength={0}
         disabled={disabled}
         placeholder={placeholder}
